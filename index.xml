@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gaoge&#39;s island</title>
-    <link>http://gaogggg.github.io/index.xml</link>
+    <link>https://gaogggg.github.io/index.xml</link>
     <description>Recent content on Gaoge&#39;s island</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>All rights reserved - 2015</copyright>
-    <atom:link href="http://gaogggg.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://gaogggg.github.io/index.xml" rel="self" type="application/rss+xml" />
     
   </channel>
 </rss>
