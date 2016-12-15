@@ -84,8 +84,9 @@ public class CacheBySoftRef { // 首先定义一个HashMap，保存软引用对�
     <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
 
     
-    <script src="https://gaogggg.github.io/js/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.min.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
 
 
@@ -236,7 +237,7 @@ Person p1 = new Person();
 
 <p><code>GC</code>过程与对象的引用类型是严重相关的，我们来看看<code>JAVA</code>对引用的分类<code>Strong reference, SoftReference, WeakReference, PhatomReference</code>。</p>
 
-<p><img src="/android/reference_table.png" alt="强弱软虚引用表" /></p>
+<p><img src="/post/android/reference_table.png" alt="强弱软虚引用表" /></p>
 
 <p>在<code>Android</code>应用的开发中，为了防止内存溢出，在处理一些占用内存大而且声明周期较长的对象时候，可以尽量应用软引用和弱引用技术。讲多一步，这里的软引用/弱引用一般是做什么的呢？</p>
 
