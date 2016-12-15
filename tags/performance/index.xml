@@ -21,7 +21,7 @@
 
 &lt;p&gt;&lt;h4&gt;基础知识&lt;/h4&gt;
 &lt;br&gt;
-&lt;strong&gt;1)泄露的对象&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;1)泄露的对象&lt;/h5&gt;&lt;/p&gt;
 
 &lt;p&gt;首先我们来了解程序运行时，所需内存的分配策略：&lt;/p&gt;
 
@@ -43,11 +43,11 @@
 
 &lt;p&gt;对于堆，频繁的&lt;code&gt;new/delete&lt;/code&gt;会造成大量内存碎片，使程序效率降低。对于栈，它是先进后出的队列，进出一一对应，不产生碎片，运行效率稳定高。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;结论：&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;
+&lt;h5&gt;结论：&lt;/h5&gt;&lt;br&gt;
 
-&lt;p&gt;&lt;strong&gt;局部变量的基本数据类型和引用存储于栈中，引用的对象实体存储于堆中。&lt;br&gt;——因为它们属于方法中的变量，生命周期随方法而结束。&lt;br&gt;成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）&lt;br&gt;——因为它们属于类，类对象终究是要被&lt;code&gt;new&lt;/code&gt;出来使用的。&lt;br&gt;我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。&lt;/strong&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+&lt;strong&gt;局部变量的基本数据类型和引用存储于栈中，引用的对象实体存储于堆中。&lt;br&gt;——因为它们属于方法中的变量，生命周期随方法而结束。&lt;br&gt;成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）&lt;br&gt;——因为它们属于类，类对象终究是要被&lt;code&gt;new&lt;/code&gt;出来使用的。&lt;br&gt;我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。&lt;/strong&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;
 
-&lt;p&gt;&lt;strong&gt;2)泄露的原因&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;2)泄露的原因&lt;/h5&gt;
 
 &lt;p&gt;为了判断&lt;code&gt;JAVA&lt;/code&gt;中是否有内存泄露，我们首先必须了解&lt;code&gt;JAVA&lt;/code&gt;是如何管理（堆）内存的。&lt;code&gt;JAVA&lt;/code&gt;的内存管理就是对象的分配和释放问题。在&lt;code&gt;JAVA&lt;/code&gt;中，内存的分配是由程序完成的，而内存的释放是由垃圾收集器&lt;code&gt;Garbage Collection,GC&lt;/code&gt;完成的，程序员不需要通过调用函数来释放内存，但它只能回收无用并且不再被其它对象引用的那些对象所占用的空间。&lt;/p&gt;
 
@@ -131,7 +131,8 @@ Person p1 = new Person();
 
     }
 
-}&lt;/code&gt;&lt;/pre&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;使用软引用以后，在&lt;code&gt;OutOfMemory&lt;/code&gt;异常发生之前，这些缓存的图片资源的内存空间可以被释放掉的，从而避免内存达到上限，避免&lt;code&gt;Crash&lt;/code&gt;发生。&lt;/p&gt;
 
@@ -144,7 +145,7 @@ Person p1 = new Person();
 &lt;hr&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;h4&gt;常见原因及实践&lt;/h4&gt;&lt;br&gt;
-&lt;strong&gt;常见原因&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;常见原因&lt;/h5&gt;&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;集合类&lt;/p&gt;
@@ -180,7 +181,7 @@ Person p1 = new Person();
 &lt;p&gt;6.2 构造 Adapter 时，没有使用缓存的 convertView。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;strong&gt;优秀实践&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;优秀实践&lt;/h5&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;对&lt;code&gt;activity&lt;/code&gt;等组件的引用应该控制在&lt;code&gt;activity&lt;/code&gt;的生命周期之内；如果不能就考虑使用&lt;code&gt;getApplicationContext&lt;/code&gt;或者&lt;code&gt;getApplication&lt;/code&gt;，以避免&lt;code&gt;activity&lt;/code&gt;被外部长生命周期的对象引用而泄露。&lt;/p&gt;&lt;/li&gt;
@@ -200,7 +201,7 @@ b) 线程内如果需要引用外部类对象如&lt;code&gt;context&lt;/code&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;&lt;h4&gt;排查方法以及工具&lt;/h4&gt;&lt;br&gt;
-&lt;strong&gt;MAT内存分析&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;MAT内存分析&lt;/h5&gt;&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;需要的软件&lt;/p&gt;
@@ -247,7 +248,7 @@ b) 线程内如果需要引用外部类对象如&lt;code&gt;context&lt;/code&gt;
 &lt;p&gt;3.7 将两个列表进行对比，找出多出的一个对象，用查找&lt;code&gt;GC Root&lt;/code&gt;的方法找出是谁串起了这条引用线路，定位结束。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;strong&gt;LeakCanary内存分析&lt;/strong&gt;&lt;/p&gt;
+&lt;h5&gt;LeakCanary内存分析&lt;/h5&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;开始使用&lt;/p&gt;
@@ -294,7 +295,9 @@ public void onCreate() {
         refWatcher = LeakCanary.install(this);
 }
 }&lt;/code&gt;&lt;/pre&gt;
-使用 `RefWatcher` 监控 `Fragment`：
+
+&lt;p&gt;使用 &lt;code&gt;RefWatcher&lt;/code&gt; 监控 &lt;code&gt;Fragment&lt;/code&gt;：&lt;/p&gt;
+
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Override
 public void onDestroy() {
     super.onDestroy();
@@ -322,22 +325,14 @@ public void onDestroy() {
 
 &lt;p&gt;在 &lt;code&gt;Logcat&lt;/code&gt; 中，你可以看到类似这样的 &lt;code&gt;leak trace&lt;/code&gt;：&lt;/p&gt;
 
-&lt;p&gt;&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;In com.example.leakcanary:1.0:1 com.example.leakcanary.MainActivity has leaked:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;GC ROOT thread java.lang.Thread.&lt;Java Local&gt; (named &amp;lsquo;AsyncTask #1&amp;rsquo;)&lt;/li&gt;
-&lt;li&gt;references com.example.leakcanary.MainActivity$3.this$0 (anonymous class extends android.os.AsyncTask)&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;leaks com.example.leakcanary.MainActivity instance&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Reference Key: e71f3bf5-d786-4145-8539-584afaecad1d&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Device: Genymotion generic Google Nexus 6 - 5.1.0 - API 22 - 1440x2560 vbox86p&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Android Version: 5.1 API: 22&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Durations: watch=5086ms, gc=110ms, heap dump=435ms, analysis=2086ms&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;In com.example.leakcanary:1.0:1 com.example.leakcanary.MainActivity has leaked:
+\* GC ROOT thread java.lang.Thread.&lt;Java Local&gt; (named &#39;AsyncTask #1&#39;)
+\* references com.example.leakcanary.MainActivity$3.this$0 (anonymous class extends android.os.AsyncTask)
+\* leaks com.example.leakcanary.MainActivity instance
+\* Reference Key: e71f3bf5-d786-4145-8539-584afaecad1d
+\* Device: Genymotion generic Google Nexus 6 - 5.1.0 - API 22 - 1440x2560 vbox86p
+\* Android Version: 5.1 API: 22
+\* Durations: watch=5086ms, gc=110ms, heap dump=435ms, analysis=2086ms&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;LEAK TRACE之外&lt;/p&gt;
 

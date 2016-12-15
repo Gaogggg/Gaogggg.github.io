@@ -33,8 +33,7 @@
 成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）
 ——因为它们属于类，类对象终究是要被new出来使用的。
 我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。
-2)泄露的原因
-为了判断JAVA中是否有内存泄露，我们首先必须了解JAVA是如何管理（堆）内存的。JAVA的内存管理就是对象的分配和释放问题。在JAVA中，内存的分配是由程序完成的，而内存的释放是由垃圾收集器Garbage Collection,GC完成的，程序员不需要通过调用函数来释放内存，但它只能回收无用并且不再被其它对象引用的那些对象所占用的空间。
+2)泄露的原因 为了判断JAVA中是否有内存泄露，我们首先必须了解JAVA是如何管理（堆）内存的。JAVA的内存管理就是对象的分配和释放问题。在JAVA中，内存的分配是由程序完成的，而内存的释放是由垃圾收集器Garbage Collection,GC完成的，程序员不需要通过调用函数来释放内存，但它只能回收无用并且不再被其它对象引用的那些对象所占用的空间。
 Java的内存垃圾回收机制是从程序的主要运行对象(如静态对象/寄存器/栈上指向的堆内存对象等)开始检查引用链，当遍历一遍后得到上述这些无法回收的对象和他们所引用的对象链，组成无法回收的对象集合，而其他孤立对象（集）就作为垃圾回收。GC为了能够正确释放对象，必须监控每一个对象的运行状态，包括对象的申请、引用、被引用、赋值等，GC都需要进行监控。监视对象状态是为了更加准确地、及时地释放对象，而释放对象的根本原则就是该对象不再被引用。
 在JAVA中，这些无用的对象都由GC负责回收，因此程序员不需要考虑这部分的内存泄露。虽然，我们有几个函数可以访问GC，例如运行GC的函数System.gc()，但是根据JAVA语言规范定义，该函数不保证JVM的垃圾收集器一定会执行。因为不同的JVM实现者可能使用不同的算法管理GC。通常GC的线程的优先级别较低。JVM调用GC的策略也有很多种，有的是内存使用到达一定程度时，GC才开始工作，也有定时执行的，有的是平缓执行GC，有的是中断式执行GC。但通常来说，我们不需要关心这些。
 至此，我们来看看JAVA中需要被回收的垃圾： ｛ Person p1 = new Person(); …… ｝
@@ -183,7 +182,7 @@ public class CacheBySoftRef { // 首先定义一个HashMap，保存软引用对�
 
 <p><h4>基础知识</h4>
 <br>
-<strong>1)泄露的对象</strong></p>
+<h5>1)泄露的对象</h5></p>
 
 <p>首先我们来了解程序运行时，所需内存的分配策略：</p>
 
@@ -205,11 +204,11 @@ public class CacheBySoftRef { // 首先定义一个HashMap，保存软引用对�
 
 <p>对于堆，频繁的<code>new/delete</code>会造成大量内存碎片，使程序效率降低。对于栈，它是先进后出的队列，进出一一对应，不产生碎片，运行效率稳定高。</p>
 
-<p><strong>结论：</strong><br></p>
+<h5>结论：</h5><br>
 
-<p><strong>局部变量的基本数据类型和引用存储于栈中，引用的对象实体存储于堆中。<br>——因为它们属于方法中的变量，生命周期随方法而结束。<br>成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）<br>——因为它们属于类，类对象终究是要被<code>new</code>出来使用的。<br>我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。</strong></font><br><br></p>
+<strong>局部变量的基本数据类型和引用存储于栈中，引用的对象实体存储于堆中。<br>——因为它们属于方法中的变量，生命周期随方法而结束。<br>成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）<br>——因为它们属于类，类对象终究是要被<code>new</code>出来使用的。<br>我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。</strong></font><br><br>
 
-<p><strong>2)泄露的原因</strong></p>
+<h5>2)泄露的原因</h5>
 
 <p>为了判断<code>JAVA</code>中是否有内存泄露，我们首先必须了解<code>JAVA</code>是如何管理（堆）内存的。<code>JAVA</code>的内存管理就是对象的分配和释放问题。在<code>JAVA</code>中，内存的分配是由程序完成的，而内存的释放是由垃圾收集器<code>Garbage Collection,GC</code>完成的，程序员不需要通过调用函数来释放内存，但它只能回收无用并且不再被其它对象引用的那些对象所占用的空间。</p>
 
@@ -293,7 +292,8 @@ Person p1 = new Person();
 
     }
 
-}</code></pre>
+}
+</code></pre>
 
 <p>使用软引用以后，在<code>OutOfMemory</code>异常发生之前，这些缓存的图片资源的内存空间可以被释放掉的，从而避免内存达到上限，避免<code>Crash</code>发生。</p>
 
@@ -306,7 +306,7 @@ Person p1 = new Person();
 <hr></p>
 
 <p><h4>常见原因及实践</h4><br>
-<strong>常见原因</strong></p>
+<h5>常见原因</h5></p>
 
 <ol>
 <li><p>集合类</p>
@@ -342,7 +342,7 @@ Person p1 = new Person();
 <p>6.2 构造 Adapter 时，没有使用缓存的 convertView。</p></li>
 </ol>
 
-<p><strong>优秀实践</strong></p>
+<h5>优秀实践</h5>
 
 <ol>
 <li><p>对<code>activity</code>等组件的引用应该控制在<code>activity</code>的生命周期之内；如果不能就考虑使用<code>getApplicationContext</code>或者<code>getApplication</code>，以避免<code>activity</code>被外部长生命周期的对象引用而泄露。</p></li>
@@ -362,7 +362,7 @@ b) 线程内如果需要引用外部类对象如<code>context</code>，需要使
 </ol>
 
 <p><h4>排查方法以及工具</h4><br>
-<strong>MAT内存分析</strong></p>
+<h5>MAT内存分析</h5></p>
 
 <ol>
 <li><p>需要的软件</p>
@@ -409,7 +409,7 @@ b) 线程内如果需要引用外部类对象如<code>context</code>，需要使
 <p>3.7 将两个列表进行对比，找出多出的一个对象，用查找<code>GC Root</code>的方法找出是谁串起了这条引用线路，定位结束。</p></li>
 </ol>
 
-<p><strong>LeakCanary内存分析</strong></p>
+<h5>LeakCanary内存分析</h5>
 
 <ol>
 <li><p>开始使用</p>
@@ -456,7 +456,9 @@ public void onCreate() {
         refWatcher = LeakCanary.install(this);
 }
 }</code></pre>
-使用 `RefWatcher` 监控 `Fragment`：
+
+<p>使用 <code>RefWatcher</code> 监控 <code>Fragment</code>：</p>
+
 <pre><code class="language-java">@Override
 public void onDestroy() {
     super.onDestroy();
@@ -484,22 +486,14 @@ public void onDestroy() {
 
 <p>在 <code>Logcat</code> 中，你可以看到类似这样的 <code>leak trace</code>：</p>
 
-<p><pre><code class="language-java">In com.example.leakcanary:1.0:1 com.example.leakcanary.MainActivity has leaked:</p>
-
-<ul>
-<li>GC ROOT thread java.lang.Thread.<Java Local> (named &lsquo;AsyncTask #1&rsquo;)</li>
-<li>references com.example.leakcanary.MainActivity$3.this$0 (anonymous class extends android.os.AsyncTask)</li>
-
-<li><p>leaks com.example.leakcanary.MainActivity instance</p></li>
-
-<li><p>Reference Key: e71f3bf5-d786-4145-8539-584afaecad1d</p></li>
-
-<li><p>Device: Genymotion generic Google Nexus 6 - 5.1.0 - API 22 - 1440x2560 vbox86p</p></li>
-
-<li><p>Android Version: 5.1 API: 22</p></li>
-
-<li><p>Durations: watch=5086ms, gc=110ms, heap dump=435ms, analysis=2086ms</code></pre></p></li>
-</ul></li>
+<pre><code class="language-java">In com.example.leakcanary:1.0:1 com.example.leakcanary.MainActivity has leaked:
+\* GC ROOT thread java.lang.Thread.<Java Local> (named 'AsyncTask #1')
+\* references com.example.leakcanary.MainActivity$3.this$0 (anonymous class extends android.os.AsyncTask)
+\* leaks com.example.leakcanary.MainActivity instance
+\* Reference Key: e71f3bf5-d786-4145-8539-584afaecad1d
+\* Device: Genymotion generic Google Nexus 6 - 5.1.0 - API 22 - 1440x2560 vbox86p
+\* Android Version: 5.1 API: 22
+\* Durations: watch=5086ms, gc=110ms, heap dump=435ms, analysis=2086ms</code></pre></li>
 
 <li><p>LEAK TRACE之外</p>
 
