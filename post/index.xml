@@ -7,8 +7,110 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>All rights reserved - 2016</copyright>
-    <lastBuildDate>Wed, 14 Dec 2016 18:16:24 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 15 Dec 2016 16:16:24 +0800</lastBuildDate>
     <atom:link href="https://Gaogggg.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Effective Java ReadingNotes 1</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes1/</link>
+      <pubDate>Thu, 15 Dec 2016 16:16:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes1/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(1)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第2章 创建和销毁对象&lt;/p&gt;
+
+&lt;h5&gt;1.考虑用静态工厂方法代替构造器&lt;/h5&gt;
+
+&lt;p&gt;静态工厂方法相较于构造器有四大优势：（1）它们有名称；（2）不必在每次调用它们的时候都创建一个新对象；（3）它们可以返回原返回类型的任何子类型的对象；（4）在创建参数化类型实例时，它们使代码变得更加简洁。两大缺点：（1）类如果不含公有的或受保护的构造器，就不能被子类化；（2）它们与其他的静态方法实际上并没有任何区别。&lt;/p&gt;
+
+&lt;h5&gt;2.遇到多个构造器参数时要考虑用构建器&lt;/h5&gt;
+
+&lt;p&gt;一个很直观的例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class NutritionFacts {
+    private final int servingSize;
+    private final int servings;
+    private final int calories;
+    private final int fat;
+
+    public static class Builder {
+        private final int servingSize;
+        private final int servings;
+
+        private int calories = 0;
+        private int fat = 0;
+
+        public Builder(int servingSize, int servings){
+            this.servingSize = servingSize;
+            this.servings = servings;
+        }
+
+        public Builder calories(int val){
+            calories = val;
+            return this;
+        }
+
+        public Builder fat(int val){
+            fat = val;
+            return this;
+        }
+
+        public NutritionFacts build(){
+            return new NutritionFacts(this);
+        }
+    }
+
+    private NutritionFacts(Builder builder){
+        servingSize = builder.servingSize;
+        servings = builder.servings;
+        calories = builder.calories;
+        fat = builder.fat;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当需要创建一个实例时只需根据自己的需要添加参数&lt;code&gt;NutritionFacts cocaCola = new Builder(240,8).calories(100).build();&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h5&gt;3.用私有构造器或者枚举类型强化Singleton属性&lt;/h5&gt;
+
+&lt;p&gt;除了非常常见的两种单例实现方法外，在Java 1.5之后我们有了一个更好的选择，使用单元素枚举类型：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public enum SingleTon {
+    INSTANCE;
+    public void orz() {
+        //blablabla
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后如此调用&lt;code&gt;SingleTon s1 = SingleTon.INSTANCE;s1.orz();&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5&gt;4.通过私有构造器强化不可实例化的能力&lt;/h5&gt;
+
+&lt;p&gt;对于一些只包含静态方法和静态域的工具类，我们不希望它被实例化，可以通过以下方式进行强化：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class UtilityClass{
+    //Suppress default constructor for moninstantiability
+    private UtilityClass(){
+        throw new AssertionError();
+    }
+    ...
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;5.避免创建不必要的对象&lt;/h5&gt;
+
+&lt;p&gt;一般来说，最好能重用对象而不是在每次需要的时候就创建一个相同功能的新对象。&lt;/p&gt;
+
+&lt;p&gt;对于可重用的对象可以通过使用一个静态的初始化器&lt;code&gt;static{}&lt;/code&gt;来创建以避免重复创建，要优先使用基本类型而不是装箱基本类型，要当心无意识的自动装箱。维护自己的对象池来避免创建对象并不是一种好的做法，除非池中的对象是非常重量级的，其中一个典型示例为数据库连接池。&lt;/p&gt;
+
+&lt;h5&gt;6.消除过期的对象引用&lt;/h5&gt;
+
+&lt;p&gt;要警惕内存泄漏问题，及时清除过期引用，使用合适的数据结构保存缓存、监听器以及其他回调，例如&lt;code&gt;WeakReference&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h5&gt;7.避免使用终结方法&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;finalizer&lt;/code&gt;通常是不可预测的，也是很危险的，一般情况下是不必要的，并且该方法会导致严重的性能损失。如果类的对象中封装的资源确实需要终止，我们应该提供一个显式的终止方法，并要求该类的客户端在每个实例不再有用的时候调用这个方法。终结方法有两种合法用途：1、充当&amp;rdquo;安全网&amp;rdquo;；2、终止非关键的本地资源。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Android Memory Leak</title>

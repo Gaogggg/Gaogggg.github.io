@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:image" content="https://gaogggg.github.io/images/cover.jpg"/>
+
+
+
+<meta name="twitter:title" content="Java"/>
+<meta name="twitter:description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY"/>
+
+
+
+  	<meta property="og:title" content=" Java &middot;  Gaoge&#39;s island" />
+  	<meta property="og:site_name" content="Gaoge&#39;s island" />
+  	<meta property="og:url" content="https://Gaogggg.github.io/tags/java/" />
+
+    
+    <meta property="og:type" content="website" />
+    
+
+    <title>
+       Java &middot;  Gaoge&#39;s island
+    </title>
+
+    <meta name="description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://gaogggg.github.io/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://gaogggg.github.io/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
+
+    
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+    
+      
+          <link href="https://gaogggg.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Gaoge&#39;s island" />
+      
+      
+        <link href="https://Gaogggg.github.io/tags/java/index.xml" rel="alternate" type="application/rss+xml" title="Java &middot; Gaoge&#39;s island" />
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://Gaogggg.github.io/tags/java/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">HOME</a>
+            </li>
+        
+            <h3>Contact me</h3>
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">email</a>
+            </li>
+        
+    </ul>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+	 
+  <header class="main-header tag-head" style="background-image: url(https://gaogggg.github.io/images/cover.jpg)">
+  
+
+    <nav class="main-nav overlay clearfix">
+      
+        <a class="blog-logo" href="https://gaogggg.github.io/"><img src="https://gaogggg.github.io/images/logo.png" alt="Home" /></a>
+      
+      
+          <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+      
+    </nav>
+    <div class="vertical">
+        <div class="main-header-content inner">
+            <h1 class="page-title">Java</h1>
+            <h2 class="page-description">
+                
+            </h2>
+        </div>
+    </div>
+</header>
+
+<main class="content" role="main">
+    
+
+	<div class="extra-pagination inner">
+    <nav class="pagination" role="navigation">
+	
+	<span class="page-number">Page 1 of 1</span>
+	
+</nav>
+
+	</div>
+
+	
+	   
+<article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes1/">Effective Java ReadingNotes 1</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>Effective Java阅读笔记(1)
+Effective Java第2章 创建和销毁对象
+1.考虑用静态工厂方法代替构造器 静态工厂方法相较于构造器有四大优势：（1）它们有名称；（2）不必在每次调用它们的时候都创建一个新对象；（3）它们可以返回原返回类型的任何子类型的对象；（4）在创建参数化类型实例时，它们使代码变得更加简洁。两大缺点：（1）类如果不含公有的或受保护的构造器，就不能被子类化；（2）它们与其他的静态方法实际上并没有任何区别。
+2.遇到多个构造器参数时要考虑用构建器 一个很直观的例子：
+public class NutritionFacts { private final int servingSize; private final int servings; private final int calories; private final int fat; public static class Builder { private final int servingSize; private final int servings; private int calories = 0; private int fat = 0; public Builder(int servingSize, int servings){ this.servingSize = servingSize; this.servings = servings; } public Builder calories(int val){ calories = val; return this; } public Builder fat(int val){ fat = val; return this; } public NutritionFacts build(){ return new NutritionFacts(this); } } private NutritionFacts(Builder builder){ servingSize = builder. <a class="read-more" href="/post/readingnotes/effective-java-readingnotes1/">&raquo;</a></p>
+    </section>
+    <footer class="post-meta">
+        
+        
+            
+            
+        
+
+        
+            <img class="author-thumb" src="https://gaogggg.github.io/images/logo.png" alt="Author image" nopin="nopin" />
+        
+        
+            gaoge
+        
+        on
+            
+                <a href="https://gaogggg.github.io/tags/java/">#java</a>,
+            
+                <a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a>,
+            
+        
+        <time class="post-date" datetime="2016-12-15T16:16:24&#43;08:00">
+            15 Dec 2016
+        </time>
+    </footer>
+</article>
+
+	
+
+	<nav class="pagination" role="navigation">
+	
+	<span class="page-number">Page 1 of 1</span>
+	
+</nav>
+
+</main>
+
+
+
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Gaoge&#39;s island</a> All rights reserved - 2016</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/index.js"></script>
+    
+</body>
+</html>
