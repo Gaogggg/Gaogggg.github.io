@@ -163,45 +163,6 @@
         
 <article class="post post">
     <header class="post-header">
-        <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes1/">Effective Java ReadingNotes 1</a></h2>
-    </header>
-    <section class="post-excerpt">
-        <p>Effective Java阅读笔记(1)
-Effective Java第2章 创建和销毁对象
-1.考虑用静态工厂方法代替构造器 静态工厂方法相较于构造器有四大优势：（1）它们有名称；（2）不必在每次调用它们的时候都创建一个新对象；（3）它们可以返回原返回类型的任何子类型的对象；（4）在创建参数化类型实例时，它们使代码变得更加简洁。两大缺点：（1）类如果不含公有的或受保护的构造器，就不能被子类化；（2）它们与其他的静态方法实际上并没有任何区别。
-2.遇到多个构造器参数时要考虑用构建器 一个很直观的例子：
-public class NutritionFacts { private final int servingSize; private final int servings; private final int calories; private final int fat; public static class Builder { private final int servingSize; private final int servings; private int calories = 0; private int fat = 0; public Builder(int servingSize, int servings){ this.servingSize = servingSize; this.servings = servings; } public Builder calories(int val){ calories = val; return this; } public Builder fat(int val){ fat = val; return this; } public NutritionFacts build(){ return new NutritionFacts(this); } } private NutritionFacts(Builder builder){ servingSize = builder. <a class="read-more" href="/post/readingnotes/effective-java-readingnotes1/">&raquo;</a></p>
-    </section>
-    <footer class="post-meta">
-        
-        
-            
-            
-        
-
-        
-            <img class="author-thumb" src="https://gaogggg.github.io/images/logo.png" alt="Author image" nopin="nopin" />
-        
-        
-            gaoge
-        
-        on
-            
-                <a href="https://gaogggg.github.io/tags/java/">#java</a>,
-            
-                <a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a>,
-            
-        
-        <time class="post-date" datetime="2016-12-15T16:16:24&#43;08:00">
-            15 Dec 2016
-        </time>
-    </footer>
-</article>
-
-    
-        
-<article class="post post">
-    <header class="post-header">
         <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes2/">Effective Java ReadingNotes 2</a></h2>
     </header>
     <section class="post-excerpt">
@@ -227,6 +188,45 @@ Effective Java第3章 对于所有对象都通用的方法
   10.始终要覆盖toString 提供好的toString实现可以使类用起来更加舒适，在实际应用中，toString方法应该返回对象中包含的所有值得关注的信息。
 4.通过私有构造器强化不可实例化的能力 对于一些只包含静态方法和静态域的工具类，我们不希望它被实例化，可以通过以下方式进行强化：
 public class UtilityClass{ //Suppress default constructor for moninstantiability private UtilityClass(){ throw new AssertionError(); } ... } 11.谨慎地覆盖clone Clone方法的通用约定： 对于任何对象x，表达式x.clone() != x 将会是true，并且，表达式x.clone().getClass() == x.getClass()将会是true，但这些都不是绝对的要求。虽然通常情况下，表达式x.clone().equals(x)将会是true，但是，这也不是一个绝对的要求。拷贝对象往往会导致创建它的类的一个新实例，但它同时也会要求拷贝内部的数据结构。这个过程中没有调用构造器。 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes2/">&raquo;</a></p>
+    </section>
+    <footer class="post-meta">
+        
+        
+            
+            
+        
+
+        
+            <img class="author-thumb" src="https://gaogggg.github.io/images/logo.png" alt="Author image" nopin="nopin" />
+        
+        
+            gaoge
+        
+        on
+            
+                <a href="https://gaogggg.github.io/tags/java/">#java</a>,
+            
+                <a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a>,
+            
+        
+        <time class="post-date" datetime="2016-12-15T19:18:24&#43;08:00">
+            15 Dec 2016
+        </time>
+    </footer>
+</article>
+
+    
+        
+<article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes1/">Effective Java ReadingNotes 1</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>Effective Java阅读笔记(1)
+Effective Java第2章 创建和销毁对象
+1.考虑用静态工厂方法代替构造器 静态工厂方法相较于构造器有四大优势：（1）它们有名称；（2）不必在每次调用它们的时候都创建一个新对象；（3）它们可以返回原返回类型的任何子类型的对象；（4）在创建参数化类型实例时，它们使代码变得更加简洁。两大缺点：（1）类如果不含公有的或受保护的构造器，就不能被子类化；（2）它们与其他的静态方法实际上并没有任何区别。
+2.遇到多个构造器参数时要考虑用构建器 一个很直观的例子：
+public class NutritionFacts { private final int servingSize; private final int servings; private final int calories; private final int fat; public static class Builder { private final int servingSize; private final int servings; private int calories = 0; private int fat = 0; public Builder(int servingSize, int servings){ this.servingSize = servingSize; this.servings = servings; } public Builder calories(int val){ calories = val; return this; } public Builder fat(int val){ fat = val; return this; } public NutritionFacts build(){ return new NutritionFacts(this); } } private NutritionFacts(Builder builder){ servingSize = builder. <a class="read-more" href="/post/readingnotes/effective-java-readingnotes1/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         
