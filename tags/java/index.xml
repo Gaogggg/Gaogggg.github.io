@@ -10,6 +10,309 @@
     <atom:link href="https://Gaogggg.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Effective Java ReadingNotes 3</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes3/</link>
+      <pubDate>Fri, 16 Dec 2016 14:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes3/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(3)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第4章 类和接口&lt;/p&gt;
+
+&lt;h5&gt;13.使类和成员的可访问性最小化&lt;/h5&gt;
+
+&lt;p&gt;访问控制机制决定了类、接口和成员的可访问性。实体的可访问性是由该实体声明所在的位置，以及该实体声明中所出现的访问修饰符共同决定的。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;尽可能地使每个类或者成员不被外界访问。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;私有的&lt;code&gt;private&lt;/code&gt;——只有在声明该成员的顶层类内部才可以访问这个成员。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;包级私有的&lt;code&gt;package-private/default&lt;/code&gt;——声明该成员的包内部的任何类都可以访问这个成员。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;受保护的&lt;code&gt;protected&lt;/code&gt;——声明该成员的类的子类可以访问这个成员（有一些限制），并且，声明该成员的包内部的任何类也可以访问这个成员。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;公有的&lt;code&gt;public&lt;/code&gt;——在任何地方都可以访问该成员。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;实现了Serializable接口的类的私有域可能会被“泄漏”。&lt;/p&gt;
+
+&lt;p&gt;子类中的访问级别不允许低于超类中的访问级别。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;除了公有静态final域的特殊情形之外，公有类都不应该包含公有域。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h5&gt;14.在公有类中使用访问方法而非公有域&lt;/h5&gt;
+
+&lt;p&gt;如果类可以在它所在的包的外部进行访问，就提供访问方法。公有类永远都不应该暴露可变的域。但是，有时候会需要用包级私有的或者私有的嵌套类来暴露域，无论这个类是可变还是不可变的。&lt;/p&gt;
+
+&lt;h5&gt;15.使可变性最小化&lt;/h5&gt;
+
+&lt;p&gt;不可变类只是其实例不能被修改的类。每个实例中包含的所有信息都必须在创建该实例的时候就提供，并在对象的整个生命周期内固定不变。不可变类比可变类更加易于设计、实现和使用。它们不容易出错，且更加安全。&lt;/p&gt;
+
+&lt;p&gt;为了使类成为不可变，要遵循下面五条规则：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;不要提供任何会修改对象状态的方法。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;保证类不会被扩展。一般使类成为&lt;code&gt;final&lt;/code&gt;，但后面还会讨论其他做法。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使所有的域都是&lt;code&gt;final&lt;/code&gt;的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使所有的域都成为私有的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;确保对于任何可变组件的互斥访问。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;不可变对象本质上是线程安全的，它们不要求同步；不仅可以共享不可变对象，甚至也可以共享它们的内部信息；不可以对象为其他对象提供了大量的构件。&lt;strong&gt;不可变类真正唯一的缺点是，对于每个不同的值都需要一个单独的对象。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;让不可变的类变成&lt;code&gt;final&lt;/code&gt;的另一种方法就是，让类的所有构造器都变成私有的或者包级私有的，并添加公有的静态工厂来代替公有的构造器。&lt;/p&gt;
+
+&lt;h5&gt;*16.复合优先于继承&lt;/h5&gt;
+
+&lt;p&gt;继承打破了封装性，子类依赖于其超类中特定功能的实现细节。只有当子类和超类之间确实存在子类型关系时，使用继承才是恰当的。&lt;/p&gt;
+
+&lt;p&gt;为了避免继承导致的脆弱性，我们可以用复合和转发机制来代替继承，尤其是当存在适当的接口可以实现包装类的时候。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class ForwardingSet&lt;E&gt; implements Set&lt;E&gt; {
+    private final Set&lt;E&gt; s;
+
+    public ForwardingSet(Set&lt;E&gt; s) {
+        this.s = s;
+    }
+
+    public void clear() {
+        s.clear();
+    }
+
+    public boolean contains(Object o) {
+        return s.contains(o);
+    }
+
+    public boolean isEmpty() {
+        return s.isEmpty();
+    }
+
+    public int size() {
+        return s.size();
+    }
+
+    public Iterator&lt;E&gt; iterator() {
+        return s.iterator();
+    }
+
+    public boolean add(E e) {
+        return s.add(e);
+    }
+
+    public boolean remove(Object o) {
+        return s.remove(o);
+    }
+
+    public boolean containsAll(Collection&lt;?&gt; c) {
+        return s.containsAll(c);
+    }
+
+    public boolean addAll(Collection&lt;? extends E&gt; c) {
+        return s.addAll(c);
+    }
+
+    public boolean removeAll(Collection&lt;?&gt; c) {
+        return s.removeAll(c);
+    }
+
+    public boolean retainAll(Collection&lt;?&gt; c) {
+        return s.retainAll(c);
+    }
+
+    public Object[] toArray() {
+        return s.toArray();
+    }
+
+    public &lt;T&gt; T[] toArray(T[] a) {
+        return s.toArray(a);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return s.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return s.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return s.toString();
+    }
+}
+
+public class InstrumentedSet&lt;E&gt; extends ForwardingSet&lt;E&gt; {
+    private int addCount = 0;
+
+    public InstrumentedSet(Set&lt;E&gt; s) {
+        super(s);
+    }
+
+    @Override
+    public boolean add(E e) {
+        addCount++;
+        return super.add(e);
+    }
+
+    @Override
+    public boolean addAll(Collection&lt;? extends E&gt; c) {
+        addCount += c.size();
+        return super.addAll(c);
+    }
+
+    public int getAddCount() {
+        return addCount;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;17.要么为继承而设计，并提供文档说明，要么就禁止继承&lt;/h5&gt;
+
+&lt;p&gt;为继承而设计的类必须有文档说明它可覆盖&lt;code&gt;overridable&lt;/code&gt;的方法的自用性，且必须通过某种形式提供适当的钩子&lt;code&gt;hook&lt;/code&gt;，以便能够进入到它的内部工作流程中，这种形式可以使精心选择的受保护&lt;code&gt;protected&lt;/code&gt;的方法，也可以是受保护的域，后者比较少见。该类的唯一的测试方法就是编写子类。&lt;/p&gt;
+
+&lt;p&gt;为了允许继承，类还必须遵守其他一些约束。&lt;strong&gt;构造器决不能调用可被覆盖的方法，无论是直接调用还是间接调用。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h5&gt;18.接口优于抽象类&lt;/h5&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;现有的类可以很容易被更新，以实现新的接口。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;接口是定义&lt;code&gt;mixin(混合类型)&lt;/code&gt;的理想选择。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;接口允许我们构造非层次结构的类型框架。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;抽象类的演变比接口的演变要容易得多。&lt;strong&gt;接口一旦被公开发行，并且已被广泛实现，再想改变这个接口几乎是不可能的。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h5&gt;19.接口只用于定义类型&lt;/h5&gt;
+
+&lt;p&gt;接口应该只被用来定义类型，不应该被用来导出常量，导出常量可以使用枚举类型和不可实例化的工具类。&lt;/p&gt;
+
+&lt;h5&gt;20.类层次优于标签类&lt;/h5&gt;
+
+&lt;p&gt;标签类过于冗长、容易出错，并且效率低下。标签类很少有适用的时候，当你想要编写一个包含显式标签域的类时，应该考虑一下这个标签是否可以被取消，这个类是否可以使用类层次来代替。&lt;/p&gt;
+
+&lt;p&gt;以下为一个标签类：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;class Figure {  
+    enum Shape { RECTANGLE, CIRCLE };  
+  
+    // Tag field - the shape of this figure  
+    final Shape shape;  
+  
+    // These fields are used only if shape is RECTANGLE  
+    double length;  
+    double width;  
+  
+    // This field is used only if shape is CIRCLE  
+    double radius;  
+  
+    // Constructor for circle  
+    Figure(double radius) {  
+        shape = Shape.CIRCLE;  
+        this.radius = radius;  
+    }  
+  
+    // Constructor for rectangle  
+    Figure(double length, double width) {  
+        shape = Shape.RECTANGLE;  
+        this.length = length;  
+        this.width = width;  
+    }  
+  
+    double area() {  
+        switch(shape) {  
+          case RECTANGLE:  
+            return length * width;  
+          case CIRCLE:  
+            return Math.PI * (radius * radius);  
+          default:  
+            throw new AssertionError();  
+        }  
+    }  
+}&lt;/code&gt;&lt;/pre&gt;  
+
+&lt;p&gt;修改后：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;abstract class Figure {  
+    abstract double area();  
+}  
+class Circle extends Figure {  
+    final double radius;  
+  
+    Circle(double radius) { this.radius = radius; }  
+  
+    double area() { return Math.PI * (radius * radius); }  
+}  
+class Rectangle extends Figure {  
+    final double length;  
+    final double width;  
+  
+    Rectangle(double length, double width) {  
+        this.length = length;  
+        this.width  = width;  
+    }  
+    double area() { return length * width; }  
+}  
+class Square extends Rectangle {  
+    Square(double side) {  
+        super(side, side);  
+    }  
+}&lt;/code&gt;&lt;/pre&gt;  
+
+&lt;h5&gt;21.用函数对象表示策略&lt;/h5&gt;
+
+&lt;p&gt;函数指针的主要用途就是实现策略模式。为了在Java中实现这种模式，要声明一个接口来表示该策略，并且为每个具体策略声明一个实现了该接口的类。当一个具体的策略只被使用一次时，通常使用匿名内部类来声明和实例化这个具体策略类。当一个具体策略被设计用来重复使用的时候，它的类通常要被实现为私有的静态成员，并通过公有的静态final域被导出，其类型为该策略接口。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Arrays.sort(StringArray,new Comparator&lt;String&gt;(){
+    public int compare(String s1, String s2) {
+        return s1.length() - s2.length();
+    }
+});&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Host {
+    private static class StrLenCmp implements Comparator&lt;String&gt;,Serializable{
+ 
+        @Override
+        public int compare(String s1, String s2) {
+            return s1.length() - s2.length();
+        }
+    }
+     
+    public static final Comparator&lt;String&gt; STRING_LENGTH_COMPARATOR = new StrLenCmp();
+     
+    public static void main(String[] args) {
+        String s1 = &#34;&#34;;
+        String s2 = &#34;&#34;;
+        int result = Host.STRING_LENGTH_COMPARATOR.compare(s1, s2);
+        System.out.println(result);
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;22.优先考虑静态成员类&lt;/h5&gt;
+
+&lt;p&gt;嵌套类是指被定义在另一个类的内部的类。嵌套类存在的目的应该只是为他的外围类提供服务。如果嵌套类将来可能会用于其他的某个环境中，他就应该是顶层类。嵌套类有四种：静态成员类、非静态成员类、匿名类和局部类。除了第一种之外，其他三种都称为内部类。&lt;/p&gt;
+
+&lt;p&gt;从语法上讲，静态成员类和非静态成员类之间的唯一区别是，静态成员类的声明中包含修饰符&lt;code&gt;static&lt;/code&gt;。尽管他们的语法非常相似，但是两种嵌套类有很大的不同。非静态成员类的每个实例都隐含着与外围类的一个外围实例相关联。在非静态成员类的实例方法内部，可以调用外围实例上的方法，或者利用修改过的&lt;code&gt;this&lt;/code&gt;构造获得外围实例的引用。如果嵌套类的实例可以在他外围类的实力之外独立存在，这个嵌套类就必须是静态成员类，在没有外围实例的情况下，要想创建非静态成员类的实例是不可能的。&lt;/p&gt;
+
+&lt;p&gt;当非静态成员类的实例被创建的时候，他和外围之间的关联关系也随之被创立起来；而且，这种关联关系以后不能被修改。通常情况下，当在外围类的某个实例方法的内部调用非静态成员类的构造器时，这种关系被自动建立起来。
+使用表达式enclosingInstance.new MemberClass(args)来手工建立这种关联关系也是有可能的，但是很少使用。正如你所预料的那样，这种关联关系需要消耗费静态成员类的实例空间，并且构造的时间开销。&lt;/p&gt;
+
+&lt;p&gt;如果声明成员类不要求访问外围实例，就要始终把&lt;code&gt;static&lt;/code&gt;修饰符放在他的声明中。&lt;/p&gt;
+
+&lt;p&gt;匿名类的三种常见用法：1.动态的创建函数对象，如&lt;code&gt;sort&lt;/code&gt;方法的调用利用了匿名的&lt;code&gt;Comparator&lt;/code&gt;实例；2.创建过程对象，如&lt;code&gt;Runnable&lt;/code&gt;、&lt;code&gt;Thread&lt;/code&gt;或者&lt;code&gt;TimerTask&lt;/code&gt;实例；3.在静态工厂方法的内部使用。&lt;/p&gt;
+
+&lt;p&gt;如果一个嵌套类需要在单个方法之外仍然是可见的，或者他太长了，不适合方法内部，就应该使用成员类。如果成员类的每个实例都需要一个指向其外围实例的引用，就要把成员类做成非静态的；否则就做成静态的。假设这个嵌套类属于一个方法的内部，如果你需要在一个地方创建实例，并且已经有了一个预置的类型可以说明这个类的特征，就把他做成匿名类；否则，就做成局部类。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Effective Java ReadingNotes 2</title>
       <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes2/</link>
       <pubDate>Thu, 15 Dec 2016 19:18:24 +0800</pubDate>
@@ -66,18 +369,6 @@
 &lt;h5&gt;10.始终要覆盖toString&lt;/h5&gt;
 
 &lt;p&gt;提供好的&lt;code&gt;toString&lt;/code&gt;实现可以使类用起来更加舒适，在实际应用中，&lt;code&gt;toString&lt;/code&gt;方法应该返回对象中包含的所有值得关注的信息。&lt;/p&gt;
-
-&lt;h5&gt;4.通过私有构造器强化不可实例化的能力&lt;/h5&gt;
-
-&lt;p&gt;对于一些只包含静态方法和静态域的工具类，我们不希望它被实例化，可以通过以下方式进行强化：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class UtilityClass{
-    //Suppress default constructor for moninstantiability
-    private UtilityClass(){
-        throw new AssertionError();
-    }
-    ...
-}&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h5&gt;11.谨慎地覆盖clone&lt;/h5&gt;
 
