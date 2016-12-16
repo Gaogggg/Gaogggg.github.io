@@ -135,33 +135,45 @@
 	   
 <article class="post post">
     <header class="post-header">
+        <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes4/">Effective Java ReadingNotes 4</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>Effective Java第5章 泛型 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes4/">&raquo;</a></p>
+    </section>
+    <footer class="post-meta">
+        
+        
+            
+            
+        
+
+        
+            <img class="author-thumb" src="https://gaogggg.github.io/images/logo.png" alt="Author image" nopin="nopin" />
+        
+        
+            gaoge
+        
+        on
+            
+                <a href="https://gaogggg.github.io/tags/java/">#java</a>,
+            
+                <a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a>,
+            
+        
+        <time class="post-date" datetime="2016-12-16T18:18:24&#43;08:00">
+            16 Dec 2016
+        </time>
+    </footer>
+</article>
+
+	
+	   
+<article class="post post">
+    <header class="post-header">
         <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes3/">Effective Java ReadingNotes 3</a></h2>
     </header>
     <section class="post-excerpt">
-        <p>Effective Java阅读笔记(3)
-Effective Java第4章 类和接口
-13.使类和成员的可访问性最小化 访问控制机制决定了类、接口和成员的可访问性。实体的可访问性是由该实体声明所在的位置，以及该实体声明中所出现的访问修饰符共同决定的。
-尽可能地使每个类或者成员不被外界访问。
- 私有的private——只有在声明该成员的顶层类内部才可以访问这个成员。
- 包级私有的package-private/default——声明该成员的包内部的任何类都可以访问这个成员。
- 受保护的protected——声明该成员的类的子类可以访问这个成员（有一些限制），并且，声明该成员的包内部的任何类也可以访问这个成员。
- 公有的public——在任何地方都可以访问该成员。
-  实现了Serializable接口的类的私有域可能会被“泄漏”。
-子类中的访问级别不允许低于超类中的访问级别。
-除了公有静态final域的特殊情形之外，公有类都不应该包含公有域。
-14.在公有类中使用访问方法而非公有域 如果类可以在它所在的包的外部进行访问，就提供访问方法。公有类永远都不应该暴露可变的域。但是，有时候会需要用包级私有的或者私有的嵌套类来暴露域，无论这个类是可变还是不可变的。
-15.使可变性最小化 不可变类只是其实例不能被修改的类。每个实例中包含的所有信息都必须在创建该实例的时候就提供，并在对象的整个生命周期内固定不变。不可变类比可变类更加易于设计、实现和使用。它们不容易出错，且更加安全。
-为了使类成为不可变，要遵循下面五条规则：
- 不要提供任何会修改对象状态的方法。
- 保证类不会被扩展。一般使类成为final，但后面还会讨论其他做法。
- 使所有的域都是final的。
- 使所有的域都成为私有的。
- 确保对于任何可变组件的互斥访问。
-  不可变对象本质上是线程安全的，它们不要求同步；不仅可以共享不可变对象，甚至也可以共享它们的内部信息；不可以对象为其他对象提供了大量的构件。不可变类真正唯一的缺点是，对于每个不同的值都需要一个单独的对象。
-让不可变的类变成final的另一种方法就是，让类的所有构造器都变成私有的或者包级私有的，并添加公有的静态工厂来代替公有的构造器。
-*16.复合优先于继承 继承打破了封装性，子类依赖于其超类中特定功能的实现细节。只有当子类和超类之间确实存在子类型关系时，使用继承才是恰当的。
-为了避免继承导致的脆弱性，我们可以用复合和转发机制来代替继承，尤其是当存在适当的接口可以实现包装类的时候。
-public class ForwardingSet implements Set { private final Set s; public ForwardingSet(Set s) { this.s = s; } public void clear() { s.clear(); } public boolean contains(Object o) { return s. <a class="read-more" href="/post/readingnotes/effective-java-readingnotes3/">&raquo;</a></p>
+        <p>Effective Java第4章 类和接口 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes3/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         
@@ -196,34 +208,7 @@ public class ForwardingSet implements Set { private final Set s; public Forwardi
         <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes2/">Effective Java ReadingNotes 2</a></h2>
     </header>
     <section class="post-excerpt">
-        <p>Effective Java阅读笔记(2)
-Effective Java第3章 对于所有对象都通用的方法
-8.覆盖equals时请遵守通用约定 覆盖Object.equals的时机：类具有自己特有的“逻辑相等”概念（不同于对象等同的概念），而且超类还没有覆盖equals以实现期望的行为。这通常属于“值类”的情形，有一种“值类”不需要覆盖equals方法，即用实例受控确保“每个值至多只存在一个对象”的类，比如枚举类型。
-在覆盖equals方法的时候，你必须要遵守它的通用约定：
- 自反性。对于任何非null的引用值x,x.equals(x)必须返回true。
- 对称性。对于任何非null的引用值x和y，当且仅当y.equals(x)返回true时，x.equals(y)必须返回true。
- 传递性。对于任何非null的引用值x、y和z，如果x.equals(y)返回true，并且y.equals(z)也返回true，那么x.equals(z)也必须返回true。
- 一致性。对于任何非null的引用值x和y，只要equals的比较操作在对象中所用的信息没有被修改，多次调用x.equals(y)就会一致地返回true，或者一致地返回false。
- 对于任何非null的引用值x,x,equals(null)必须返回false。
-  实现高质量equals方法的诀窍：
- 使用==操作符检查“参数是否为这个对象的引用”。如果是，则返回true。这只不过是一种性能优化，如果比较操作有可能很昂贵，就值得这么做。
- 使用instanceof操作符检查“参数是否为正确的类型”。如果不是，则返回false。
- 把参数转换成正确的类型。因为转换前进行过instanceof测试，所以确保会成功。
- 对于该类中的每个“关键”域，检查参数中的域是否与该对象中对应的域相匹配。如果这些测试全部成功，则返回true，否则返回false。
-  对于既不是float也不是double类型的基本类型域，可以使用==操作符进行比较，对于对象引用域，可以递归地调用equals方法；对于float域，可以使用Float.compare方法；对于double域，则使用Double.compare。
-9.覆盖equals时总要覆盖hashCode Object.hashCode的通用约定：
- 在应用程序的执行期间，只要对象的equals方法的比较操作所用到的信息没有被修改，那么对这同一个对象调用多次,hashCode方法都必须始终如一地返回同一个整数。在同一个应用程序的多次执行过程中，每次执行所返回的整数可以不一致。
- 如果两个对象根据equals(Object)方法比较是相等的，那么调用这两个对象中任意一个对象的hashCode方法都必须产生同样的整数结果。
- 如果两个对象根据equals(Object)方法比较是不相等的，那么调用这两个对象中任意一个对象的hashCode方法，则不一定要产生不同的整数结果。但是程序员应该知道，给不相等的对象产生截然不同的整数结果，有可能提高散列表的性能。
-  10.始终要覆盖toString 提供好的toString实现可以使类用起来更加舒适，在实际应用中，toString方法应该返回对象中包含的所有值得关注的信息。
-11.谨慎地覆盖clone Clone方法的通用约定： 对于任何对象x，表达式x.clone() != x 将会是true，并且，表达式x.clone().getClass() == x.getClass()将会是true，但这些都不是绝对的要求。虽然通常情况下，表达式x.clone().equals(x)将会是true，但是，这也不是一个绝对的要求。拷贝对象往往会导致创建它的类的一个新实例，但它同时也会要求拷贝内部的数据结构。这个过程中没有调用构造器。
-所有实现了Cloneable接口的类都应该用一个公有的方法覆盖clone。此公有方法首先调用super.clone，然后修正任何需要修正的域。一般情况下，这意味着要拷贝任何包含内部“深层结构”的可变对象，并用指向新对象的引用代替原来指向这些对象的引用。虽然，这些内部拷贝操作往往可以通过递归地调用clone来完成，但这通常并不是最佳方法。如果该类只包含基本类型的域，或者指向不可变对象的引用，那么多半的情况是没有域需要修正。这条规则也有例外，譬如，代表序列号或其他唯一ID值得域，或者代表对象的创建时间的域，不管这些域是基本类型还是不可变的，它们也都需要被修正。
-另一个实现对象拷贝的好办法是提供一个拷贝构造器或拷贝工厂。拷贝构造器只是一个构造器，它唯一的参数类型是包含该构造器的类。如public Go(Go go);，拷贝工厂是类似于拷贝构造器的静态工厂public static Go newInstance(Go go);
-12.考虑实现Comparable接口 compareTo方法的通用约定：
-讲这个对象与指定的对象进行比较。当该对象小于、等于或大于指定对象的时候，分别返回一个负整数、零或者正整数。如果由于指定对象的类型而无法与该对象进行比较，则抛出ClassCastException异常。
-在下面的说明中，符号sgn表示数学中的signum函数，它根据表达式的值为负值、零和正值，分别返回-1、0或1。
- 实现者必须确保所有的x和y都满足sgn(x.compareTo(y)) == -sgn(y.compareTo(x))。
- 实现者还必须确保这个比较关系是可传递的。 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes2/">&raquo;</a></p>
+        <p>Effective Java第3章 对于所有对象都通用的方法 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes2/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         
@@ -258,11 +243,7 @@ Effective Java第3章 对于所有对象都通用的方法
         <h2 class="post-title"><a href="/post/readingnotes/effective-java-readingnotes1/">Effective Java ReadingNotes 1</a></h2>
     </header>
     <section class="post-excerpt">
-        <p>Effective Java阅读笔记(1)
-Effective Java第2章 创建和销毁对象
-1.考虑用静态工厂方法代替构造器 静态工厂方法相较于构造器有四大优势：（1）它们有名称；（2）不必在每次调用它们的时候都创建一个新对象；（3）它们可以返回原返回类型的任何子类型的对象；（4）在创建参数化类型实例时，它们使代码变得更加简洁。两大缺点：（1）类如果不含公有的或受保护的构造器，就不能被子类化；（2）它们与其他的静态方法实际上并没有任何区别。
-2.遇到多个构造器参数时要考虑用构建器 一个很直观的例子：
-public class NutritionFacts { private final int servingSize; private final int servings; private final int calories; private final int fat; public static class Builder { private final int servingSize; private final int servings; private int calories = 0; private int fat = 0; public Builder(int servingSize, int servings){ this.servingSize = servingSize; this.servings = servings; } public Builder calories(int val){ calories = val; return this; } public Builder fat(int val){ fat = val; return this; } public NutritionFacts build(){ return new NutritionFacts(this); } } private NutritionFacts(Builder builder){ servingSize = builder. <a class="read-more" href="/post/readingnotes/effective-java-readingnotes1/">&raquo;</a></p>
+        <p>Effective Java第2章 创建和销毁对象 <a class="read-more" href="/post/readingnotes/effective-java-readingnotes1/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         
@@ -297,38 +278,7 @@ public class NutritionFacts { private final int servingSize; private final int s
         <h2 class="post-title"><a href="/post/android/android-memory-leak/">Android Memory Leak</a></h2>
     </header>
     <section class="post-excerpt">
-        <p>Android内存泄漏总结
-基础知识 1)泄露的对象
-首先我们来了解程序运行时，所需内存的分配策略：
-按照编译原理的观点,程序运行时的内存分配有三种策略,分别是静态的,栈式的,和堆式的，对应的，三种存储策略使用的内存空间主要分别是静态存储区（也称方法区）、堆区和栈区。他们的功能不同，对他们使用方式也就不同。
-静态存储区（方法区）：内存在程序编译的时候就已经分配好，这块内存在程序整个运行期间都存在。它主要存放静态数据、全局static数据和常量。
-栈区：在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是分配的内存容量有限。
-堆区：亦称动态内存分配。程序在运行的时候用malloc或new申请任意大小的内存，程序员自己负责在适当的时候用free或delete释放内存（JAVA则依赖垃圾回收器）。动态内存的生存期可以由我们决定，如果我们不释放内存，程序将在最后才释放掉动态内存。 但是，良好的编程习惯是：如果某动态内存不再使用，需要将其释放掉。
-接下来我们集中说下堆和栈的区别：
-在函数中（说明是局部变量）定义的一些基本类型的变量和对象的引用变量都是在函数的栈内存中分配。当在一段代码块中定义一个变量时，JAVA就在栈中为这个变量分配内存空间，当超过变量的作用域后，JAVA会自动释放掉为该变量分配的内存空间，该内存空间可以立刻被另作他用。
-堆内存用于存放所有由new创建的对象（内容包括该对象其中的所有成员变量）和数组。在堆中分配的内存，由JAVA虚拟机自动垃圾回收器来管理。在堆中产生了一个数组或者对象后，还可以在栈中定义一个特殊的变量，这个变量的取值等于数组或者对象在堆内存中的首地址，在栈中的这个特殊的变量就变成了数组或者对象的引用变量，以后就可以在程序中使用栈内存中的引用变量来访问堆中的数组或者对象，引用变量相当于为数组或者对象起的一个别名，或者代号。
-堆是不连续的内存区域（因为系统是用链表来存储空闲内存地址，自然不是连续的），堆大小受限于计算机系统中有效的虚拟内存（32bit系统理论上是4G），所以堆的空间比较灵活，比较大。栈是一块连续的内存区域，大小是操作系统预定好的，windows下栈大小是2M（也有是1M，在编译时确定，VC中可设置）。
-对于堆，频繁的new/delete会造成大量内存碎片，使程序效率降低。对于栈，它是先进后出的队列，进出一一对应，不产生碎片，运行效率稳定高。
-结论：
-局部变量的基本数据类型和引用存储于栈中，引用的对象实体存储于堆中。
-——因为它们属于方法中的变量，生命周期随方法而结束。
-成员变量全部存储与堆中（包括基本数据类型，引用和引用的对象实体）
-——因为它们属于类，类对象终究是要被new出来使用的。
-我们这里说的内存泄露，是针对，也只针对堆内存，他们存放的就是引用指向的对象实体。
-2)泄露的原因 为了判断JAVA中是否有内存泄露，我们首先必须了解JAVA是如何管理（堆）内存的。JAVA的内存管理就是对象的分配和释放问题。在JAVA中，内存的分配是由程序完成的，而内存的释放是由垃圾收集器Garbage Collection,GC完成的，程序员不需要通过调用函数来释放内存，但它只能回收无用并且不再被其它对象引用的那些对象所占用的空间。
-Java的内存垃圾回收机制是从程序的主要运行对象(如静态对象/寄存器/栈上指向的堆内存对象等)开始检查引用链，当遍历一遍后得到上述这些无法回收的对象和他们所引用的对象链，组成无法回收的对象集合，而其他孤立对象（集）就作为垃圾回收。GC为了能够正确释放对象，必须监控每一个对象的运行状态，包括对象的申请、引用、被引用、赋值等，GC都需要进行监控。监视对象状态是为了更加准确地、及时地释放对象，而释放对象的根本原则就是该对象不再被引用。
-在JAVA中，这些无用的对象都由GC负责回收，因此程序员不需要考虑这部分的内存泄露。虽然，我们有几个函数可以访问GC，例如运行GC的函数System.gc()，但是根据JAVA语言规范定义，该函数不保证JVM的垃圾收集器一定会执行。因为不同的JVM实现者可能使用不同的算法管理GC。通常GC的线程的优先级别较低。JVM调用GC的策略也有很多种，有的是内存使用到达一定程度时，GC才开始工作，也有定时执行的，有的是平缓执行GC，有的是中断式执行GC。但通常来说，我们不需要关心这些。
-至此，我们来看看JAVA中需要被回收的垃圾： ｛ Person p1 = new Person(); …… ｝
-引用句柄p1的作用域是从定义到}处，执行完这对大括号中的所有代码后，产生的Person对象就会变成垃圾，因为引用这个对象的句柄p1已超过其作用域，p1失效，在栈中被销毁，因此堆上的Person对象不再被任何句柄引用了。 因此person变为垃圾，会被回收。
-从上面的例子和解释，可以看到一个很关键的词：引用。
-通俗的讲，通过A能调用并访问到B，那就说明A持有B的引用，或A就是B的引用，B的引用计数+1。
- 比如Person p1 = new Person();通过p1能操作Person对象，因此p1是Person的引用；
- 比如类O中有一个成员变量是I类对象，因此我们可以使用o.i的方式来访问I类对象的成员，因此o持有一个i对象的引用。
-  GC过程与对象的引用类型是严重相关的，我们来看看JAVA对引用的分类Strong reference, SoftReference, WeakReference, PhatomReference。
-在Android应用的开发中，为了防止内存溢出，在处理一些占用内存大而且声明周期较长的对象时候，可以尽量应用软引用和弱引用技术。讲多一步，这里的软引用/弱引用一般是做什么的呢？
-软/弱引用可以和一个引用队列ReferenceQueue联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。利用这个队列可以得知被回收的软/弱引用的对象列表，从而为缓冲器清除已失效的软/弱引用。
-假设我们的应用会用到大量的默认图片，比如应用中有默认的头像，默认游戏图标等等，这些图片很多地方会用到。如果每次都去读取图片，由于读取文件需要硬件操作，速度较慢，会导致性能较低。所以我们考虑将图片缓存起来，需要的时候直接从内存中读取。但是，由于图片占用内存空间比较大，缓存很多图片需要很多的内存，就可能比较容易发生OutOfMemory异常。这时，我们可以考虑使用软/弱引用技术来避免这个问题发生。以下就是高速缓冲器的雏形:
-public class CacheBySoftRef { // 首先定义一个HashMap，保存软引用对象。 private MapimageCache = new HashMap(); // 再来定义一个方法，保存Bitmap的软引用到HashMap。 public void addBitmapToCache(String path) { // 强引用的Bitmap对象 Bitmap bitmap = BitmapFactory. <a class="read-more" href="/post/android/android-memory-leak/">&raquo;</a></p>
+        <p>Android内存泄漏总结 <a class="read-more" href="/post/android/android-memory-leak/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         
