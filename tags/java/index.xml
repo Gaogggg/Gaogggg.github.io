@@ -433,8 +433,8 @@ E result = (E) elements[--size];&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;编译这段代码会产生警告，为了修正这些警告(在新代码中不应该直接使用原始类型，当前是为了举例子)要将方法声名修改为声明一个类型参数，表示这三个元素类型(两个参数及一个返回值)，并在方法中使用类型参数。声名类型参数的类型参数列表，处在方法的修饰符及其返回类型之间，修改后的代码如下：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &lt;E&gt; Set&lt;E&gt; union(Set&lt;E&gt; s1, Set&lt;E&gt; s2) {  
-    Set&lt;E&gt; result = new HashSet&lt;E&gt;(s1);  
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &amp;lt;E&gt; Set&amp;lt;E&gt; union(Set&amp;lt;E&gt; s1, Set&amp;lt;E&gt; s2) {  
+    Set&amp;lt;E&gt; result = new HashSet&amp;lt;E&gt;(s1);  
     result.addAll(s2);  
     return result;  
 }&lt;/code&gt;&lt;/pre&gt;
@@ -445,15 +445,15 @@ E result = (E) elements[--size];&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;对于这情况，可以遵照第&lt;code&gt;1&lt;/code&gt;条，提供一个静态工厂方法来简化：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &lt;K, V&gt; HashMap&lt;K, V&gt; newHashMap() {  
-    return new HashMap&lt;K, V&gt;();  
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &amp;lt;K, V&gt; HashMap&amp;lt;K, V&gt; newHashMap() {  
+    return new HashMap&amp;lt;K, V&gt;();  
 }&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;利用上面的静态工厂方法，我们可以把变量声明右侧的参数类型省略掉，当参数类型多而复杂时尤其有效。&lt;/p&gt;
 
 &lt;p&gt;有时会需要创建不可变但是又适合于许多不同类型的对象，由于泛型是通过擦除来实现的，可以给所有的必要的类型参数使用同一个单个对象，但是需要一个静态的工厂方法来给每个必要的类型参数分发对象。这种模式叫做&amp;rdquo;泛型单例工厂&amp;rdquo;，这种模式最常用于函数的对象。假设有一个接口，描述了一个方法，该方法接受和返回某个类型&lt;code&gt;T&lt;/code&gt;的值：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public interface UnaryFunction&lt;T&gt; {  
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public interface UnaryFunction&amp;lt;T&gt; {  
     T apply(T arg);
 }&lt;/code&gt;&lt;/pre&gt;
 
@@ -481,11 +481,11 @@ public static  UnaryFunction indentityFunction() {
 
 &lt;p&gt;如果类型参数只在方法声明中出现一次，就可以用通配符取代它。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static void swap(List&lt;?&gt; list, int i, int j) {  
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static void swap(List&amp;lt;?&gt; list, int i, int j) {  
     swapHelper(list, i, j);  
 }  
   
-private static &lt;E&gt; void swapHelper(List&lt;E&gt; list, int i, int j) {  
+private static &amp;lt;E&gt; void swapHelper(List&amp;lt;E&gt; list, int i, int j) {  
     list.set(i, list.set(j, list.get(i)));  
 }&lt;/code&gt;&lt;/pre&gt;
 
@@ -498,9 +498,9 @@ private static &lt;E&gt; void swapHelper(List&lt;E&gt; list, int i, int j) {
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class ManyTypeClass
 {
     //一个存放数据的容器,由于键值类型是不确定的，那么值类型就只能是object类型
-    private Map&lt;Class&lt;?&gt;, Object&gt; data = new HashMap&lt;Class&lt;?&gt;, Object&gt;();
+    private Map&amp;lt;Class&amp;lt;?&gt;, Object&gt; data = new HashMap&amp;lt;Class&amp;lt;?&gt;, Object&gt;();
     
-    public &lt;T&gt; void putData(Class&lt;T&gt; type, T instance)
+    public &amp;lt;T&gt; void putData(Class&amp;lt;T&gt; type, T instance)
     {
         //吧数据放入进去
         if(type != null)
@@ -510,7 +510,7 @@ private static &lt;E&gt; void swapHelper(List&lt;E&gt; list, int i, int j) {
         }
     }
     
-    public &lt;T&gt; T getDate(Class&lt;T&gt; type)
+    public &amp;lt;T&gt; T getDate(Class&amp;lt;T&gt; type)
     {
         //取出数据,由于数据存放进去是object类型的，那么取出来的时候就需要进行一次类型转换
         return type.cast(data.get(type));
@@ -526,7 +526,7 @@ private static &lt;E&gt; void swapHelper(List&lt;E&gt; list, int i, int j) {
         
         String dataString = mtc.getDate(String.class);
         int dataInteger = mtc.getDate(Integer.class);
-        Class&lt;?&gt; dataClass = mtc.getDate(Class.class);
+        Class&amp;lt;?&gt; dataClass = mtc.getDate(Class.class);
         ManyTypeClass mtc1 = mtc.getDate(ManyTypeClass.class);
         
         System.out.printf(&#34;%s %x %s %s%n&#34;, dataString,
