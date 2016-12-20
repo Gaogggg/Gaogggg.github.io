@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    
+        <meta name="twitter:card" content="summary"/>
+    
+
+
+
+<meta name="twitter:title" content="Effective Java ReadingNotes 6"/>
+<meta name="twitter:description" content="Effective Java阅读笔记(6)
+Effective Java第7章 方法
+38.检查参数的有效性 对于公有的方法，要用Javadoc的@throws标签在文档中说明违反参数值限制时会抛出的异常。
+非公有的方法通常应该使用断言assertion来检查它们的参数。
+由于无效的参数值而导致计算过程抛出的异常，与文档中标明这个方法将抛出的异常并不相符，这种情况下，应该使用异常转译exception translation技术，讲计算过程中抛出的异常转换为正确的异常。
+39.必要时进行保护性拷贝 如果类具有从客户端得到或者返回到客户端的可变组件，类就必须保护性地拷贝这些组件。如果拷贝的成本受到限制，并且类信任它的客户端不会不恰当地修改组件，就可以在文档中指明客户端的职责是不得修改受到影响的组件，以此来代替保护性拷贝。
+public final class Period { private final Date start; private final Date end; public Period(Date start,Date end) { if(start.compareTo(end)  0){ throw new IllegalArgumentException(start &#43; &#34; after &#34; &#43; end); } this.start = start; this.end = end; } public Date start(){ return start; } public Date end(){ return end; } //remainder omitted } 修改后：
+public Period(Date start,Date end) { this."/>
+
+
+
+  	<meta property="og:title" content=" Effective Java ReadingNotes 6 &middot;  Gaoge&#39;s island" />
+  	<meta property="og:site_name" content="Gaoge&#39;s island" />
+  	<meta property="og:url" content="https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes6/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-12-20T18:18:24&#43;08:00" />
+
+    
+    <meta property="og:article:tag" content="java" />
+    
+    <meta property="og:article:tag" content="readingnotes" />
+    
+    
+
+    <title>
+       Effective Java ReadingNotes 6 &middot;  Gaoge&#39;s island
+    </title>
+
+    <meta name="description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://gaogggg.github.io/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://gaogggg.github.io/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
+
+    
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+    
+      
+          <link href="https://gaogggg.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Gaoge&#39;s island" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes6/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Home</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/android">Android</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/readingnotes">ReadingNotes</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/leetcode">LeetCode</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/java">Java</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">send email to me</a>
+            </li>
+        
+    </ul>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="blog-logo" href="https://gaogggg.github.io/"><img src="https://gaogggg.github.io/images/logo.png" alt="Home" /></a>
+  
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">Effective Java ReadingNotes 6</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-12-20T18:18:24&#43;08:00">
+            Dec 20, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/java/">#java</a></span>
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <p>Effective Java阅读笔记(6)</p>
+
+<p>Effective Java第7章 方法</p>
+
+<h5>38.检查参数的有效性</h5>
+
+<p>对于公有的方法，要用<code>Javadoc</code>的<code>@throws</code>标签在文档中说明违反参数值限制时会抛出的异常。</p>
+
+<p>非公有的方法通常应该使用断言<code>assertion</code>来检查它们的参数。</p>
+
+<p>由于无效的参数值而导致计算过程抛出的异常，与文档中标明这个方法将抛出的异常并不相符，这种情况下，应该使用异常转译<code>exception translation</code>技术，讲计算过程中抛出的异常转换为正确的异常。</p>
+
+<h5>39.必要时进行保护性拷贝</h5>
+
+<p>如果类具有从客户端得到或者返回到客户端的可变组件，类就必须保护性地拷贝这些组件。如果拷贝的成本受到限制，并且类信任它的客户端不会不恰当地修改组件，就可以在文档中指明客户端的职责是不得修改受到影响的组件，以此来代替保护性拷贝。</p>
+
+<pre><code class="language-java">public final class Period {  
+    private final Date start;  
+    private final Date end;  
+    public Period(Date start,Date end) {  
+        if(start.compareTo(end) > 0){  
+            throw new IllegalArgumentException(start + " after " + end);  
+        }  
+        this.start = start;  
+        this.end = end;  
+    }  
+      
+    public Date start(){  
+        return start;  
+    }  
+      
+    public Date end(){  
+        return end;  
+    }  
+    //remainder omitted  
+}</code></pre>
+
+<p>修改后：</p>
+
+<pre><code class="language-java">public Period(Date start,Date end) {  
+    this.start = new Date(start.getTime());  
+    this.end = new Date(end.getTime());  
+    if(this.start.compareTo(this.end) > 0){  
+        throw new IllegalArgumentException(this.start + " after " + this.end);  
+    }
+
+    public Date start(){  
+        return new Date(start.getTime());  
+    }   
+    
+    public Date end(){  
+        return new Date(end.getTime());  
+    }    
+}</code></pre>
+
+<h5>40.谨慎设计方法签名</h5>
+
+<p>谨慎地选择方法的名称。</p>
+
+<p>不要过于追求提供便利的方法。</p>
+
+<p>避免过长的参数列表。三种方法：1.把方法分解成多个方法，每个方法只需要这些参数的一个子集；2.创建辅助类，用来保存参数的分组；3.从对象构建到方法调用都采用<code>Builder</code>模式。</p>
+
+<p>对于参数类型，要优先使用接口而不是类；对于<code>boolean</code>参数，要优先使用两个元素的枚举类型。</p>
+
+<h5>41.慎用重载</h5>
+
+<p><strong>对于重载方法的选择是静态的，而对于被覆盖的方法的选择则是动态的。</strong></p>
+
+<p>一般情况下，对于多个具有相同参数数目的方法来说，应该尽量避免重载方法。对于涉及构造器的时候要避免同一组参数只需经过类型转换就可以被传递给不同的重载方法。如果不能就应该保证当传递同样的参数时，所有重载方法的行为必须一致。</p>
+
+<h5>42.慎用可变参数</h5>
+
+<p>在定义参数数目不定的方法时，可变参数方法是一种很方便的方式，但是它们不应该被过度滥用。为了避免某些错误，可以让该方法带有两个参数，一个是指定类型的正常参数，另一个是这种类型的<code>varargs</code>参数。</p>
+
+<h5>43.返回零长度的数组或者集合，而不是null</h5>
+
+<p>返回类型为数组或集合的方法没理由返回<code>null</code>，而不是返回一个零长度的数组或者集合。</p>
+
+<h5>44.为所有导出的API元素编写文档注释</h5>
+
+<p>采用一致地风格来遵循标准的约定为<code>API</code>编写文档注释。</p>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="https://gaogggg.github.io/" style="background-image: url(https://gaogggg.github.io/images/logo.png)"><span class="hidden">gaoge's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="https://gaogggg.github.io/">gaoge</a></h4>
+  
+  <p>A student.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Beijing, China</span>
+    <span class="author-link icon-link"><a href="http://gaogggg.github.io">http://gaogggg.github.io</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=Effective%20Java%20ReadingNotes%206&nbsp;-&nbsp;Gaoge%27s%20island&amp;url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes6%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes6%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes6%2f&amp;description=Effective%20Java%20ReadingNotes%206"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes6%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+<div class="ds-thread" data-thread-key="" data-title="" data-url="/post/readingnotes/effective-java-readingnotes6/"></div>
+
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gaoge"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Gaoge&#39;s island</a> All rights reserved - 2016</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/index.js"></script>
+    
+</body>
+</html>
+

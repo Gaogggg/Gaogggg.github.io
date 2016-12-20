@@ -7,8 +7,99 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>All rights reserved - 2016</copyright>
-    <lastBuildDate>Tue, 20 Dec 2016 13:18:24 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 20 Dec 2016 18:18:24 +0800</lastBuildDate>
     <atom:link href="https://Gaogggg.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Effective Java ReadingNotes 6</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes6/</link>
+      <pubDate>Tue, 20 Dec 2016 18:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes6/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(6)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第7章 方法&lt;/p&gt;
+
+&lt;h5&gt;38.检查参数的有效性&lt;/h5&gt;
+
+&lt;p&gt;对于公有的方法，要用&lt;code&gt;Javadoc&lt;/code&gt;的&lt;code&gt;@throws&lt;/code&gt;标签在文档中说明违反参数值限制时会抛出的异常。&lt;/p&gt;
+
+&lt;p&gt;非公有的方法通常应该使用断言&lt;code&gt;assertion&lt;/code&gt;来检查它们的参数。&lt;/p&gt;
+
+&lt;p&gt;由于无效的参数值而导致计算过程抛出的异常，与文档中标明这个方法将抛出的异常并不相符，这种情况下，应该使用异常转译&lt;code&gt;exception translation&lt;/code&gt;技术，讲计算过程中抛出的异常转换为正确的异常。&lt;/p&gt;
+
+&lt;h5&gt;39.必要时进行保护性拷贝&lt;/h5&gt;
+
+&lt;p&gt;如果类具有从客户端得到或者返回到客户端的可变组件，类就必须保护性地拷贝这些组件。如果拷贝的成本受到限制，并且类信任它的客户端不会不恰当地修改组件，就可以在文档中指明客户端的职责是不得修改受到影响的组件，以此来代替保护性拷贝。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public final class Period {  
+    private final Date start;  
+    private final Date end;  
+    public Period(Date start,Date end) {  
+        if(start.compareTo(end) &gt; 0){  
+            throw new IllegalArgumentException(start + &#34; after &#34; + end);  
+        }  
+        this.start = start;  
+        this.end = end;  
+    }  
+      
+    public Date start(){  
+        return start;  
+    }  
+      
+    public Date end(){  
+        return end;  
+    }  
+    //remainder omitted  
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;修改后：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public Period(Date start,Date end) {  
+    this.start = new Date(start.getTime());  
+    this.end = new Date(end.getTime());  
+    if(this.start.compareTo(this.end) &gt; 0){  
+        throw new IllegalArgumentException(this.start + &#34; after &#34; + this.end);  
+    }
+
+    public Date start(){  
+        return new Date(start.getTime());  
+    }   
+    
+    public Date end(){  
+        return new Date(end.getTime());  
+    }    
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;40.谨慎设计方法签名&lt;/h5&gt;
+
+&lt;p&gt;谨慎地选择方法的名称。&lt;/p&gt;
+
+&lt;p&gt;不要过于追求提供便利的方法。&lt;/p&gt;
+
+&lt;p&gt;避免过长的参数列表。三种方法：1.把方法分解成多个方法，每个方法只需要这些参数的一个子集；2.创建辅助类，用来保存参数的分组；3.从对象构建到方法调用都采用&lt;code&gt;Builder&lt;/code&gt;模式。&lt;/p&gt;
+
+&lt;p&gt;对于参数类型，要优先使用接口而不是类；对于&lt;code&gt;boolean&lt;/code&gt;参数，要优先使用两个元素的枚举类型。&lt;/p&gt;
+
+&lt;h5&gt;41.慎用重载&lt;/h5&gt;
+
+&lt;p&gt;&lt;strong&gt;对于重载方法的选择是静态的，而对于被覆盖的方法的选择则是动态的。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;一般情况下，对于多个具有相同参数数目的方法来说，应该尽量避免重载方法。对于涉及构造器的时候要避免同一组参数只需经过类型转换就可以被传递给不同的重载方法。如果不能就应该保证当传递同样的参数时，所有重载方法的行为必须一致。&lt;/p&gt;
+
+&lt;h5&gt;42.慎用可变参数&lt;/h5&gt;
+
+&lt;p&gt;在定义参数数目不定的方法时，可变参数方法是一种很方便的方式，但是它们不应该被过度滥用。为了避免某些错误，可以让该方法带有两个参数，一个是指定类型的正常参数，另一个是这种类型的&lt;code&gt;varargs&lt;/code&gt;参数。&lt;/p&gt;
+
+&lt;h5&gt;43.返回零长度的数组或者集合，而不是null&lt;/h5&gt;
+
+&lt;p&gt;返回类型为数组或集合的方法没理由返回&lt;code&gt;null&lt;/code&gt;，而不是返回一个零长度的数组或者集合。&lt;/p&gt;
+
+&lt;h5&gt;44.为所有导出的API元素编写文档注释&lt;/h5&gt;
+
+&lt;p&gt;采用一致地风格来遵循标准的约定为&lt;code&gt;API&lt;/code&gt;编写文档注释。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Effective Java ReadingNotes 5</title>
