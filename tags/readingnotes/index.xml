@@ -10,6 +10,196 @@
     <atom:link href="https://Gaogggg.github.io/tags/readingnotes/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Effective Java ReadingNotes 5</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes5/</link>
+      <pubDate>Tue, 20 Dec 2016 13:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes5/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(5)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第6章 枚举和注解&lt;/p&gt;
+
+&lt;h5&gt;30.用enum代替int常量&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;
+public enum PayrollDay {  
+    MONDAY(PayType.WEEKDAY), TUESDAY(PayType.WEEKDAY), WEDNESDAY(  
+            PayType.WEEKDAY), THURSDAY(PayType.WEEKDAY), FRIDAY(PayType.WEEKDAY), SATURDAY(  
+            PayType.WEEKEND), SUNDAY(PayType.WEEKEND);  
+    private final PayType payType;  
+  
+    PayrollDay(PayType payType) {  
+        this.payType = payType;  
+    }  
+      
+    double pay(double hoursWorked, double payRate) {  
+        return payType.pay(hoursWorked, payRate);  
+    }  
+  
+    private enum PayType {  
+        WEEKDAY {  
+            double overtimePay(double hours, double payRate) {  
+                return hours &lt;= HOURS_PER_SHIFT ? 0 : (hours - HOURS_PER_SHIFT)  
+                        * payRate / 2;  
+            }  
+        },  
+        WEEKEND {  
+            double overtimePay(double hours, double payRate) {  
+                return hours * payRate / 2;  
+            }  
+        };  
+        private static final int HOURS_PER_SHIFT = 8;  
+  
+        abstract double overtimePay(double hours, double payRate);  
+  
+        double pay(double hoursWorked, double payRate) {  
+            double basePay = hoursWorked * payRate;  
+            return basePay + overtimePay(hoursWorked, payRate);  
+        }  
+    }  
+}  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;与&lt;code&gt;int&lt;/code&gt;常量相比，枚举要易读得多，也更加安全，功能更加强大。许多枚举都不需要显式的构造器或者成员，但许多其它枚举则受益于“每个常量与属性的关联”以及“提供行为受这个属性影响的方法”。只有极少数的枚举受益于将多种行为与单个方法关联。在这种相对少见的情况下，特定于常量的方法要优先于启用自有值的枚举。如果多个枚举常量同时享有相同的行为，则考虑策略枚举。&lt;/p&gt;
+
+&lt;h5&gt;31.用实例域代替序数&lt;/h5&gt;
+
+&lt;p&gt;&lt;strong&gt;永远不要根据枚举的序数导出与它关联的值，而是要将它保存在一个实力域中。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public enum Ensemble{
+  SOLO(1), DUET(2), TRIO(3), QUINTET(4), SEXTET(5), 
+  SEPTET(7), OCTET(8), DOUBLE_QUARTET(8), NONET(9),
+  DECTET(10), TRIPLE_QUARTRT(12);
+  
+  private final int numberOfMusicians;
+  Ensemble(int size){
+    this.numberOfMusicians = size;
+  }
+  public int numberofMusicians(){
+    return numberOfMusicians;
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Enum&lt;/code&gt;规范中谈到&lt;code&gt;ordinal&lt;/code&gt;时这么写到：“大多数的程序员都不需要这个方法。它是设计成用于像&lt;code&gt;EnumSet&lt;/code&gt;和&lt;code&gt;EnumMap&lt;/code&gt;这种基于枚举的通用数据结构的。”除非你在编写的是这种数据结构，否则最好完全避免使用&lt;code&gt;ordinal&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;h5&gt;32.用EnumSet代替位域&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;EnumSet&lt;/code&gt;类集位域的简洁和性能优势及第&lt;code&gt;30&lt;/code&gt;条中所述的枚举类型的所有的优点于一身。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;
+public class Text{
+    public enum TextStyle{BOLD, ITALIC, UNDERLINE, STRIKETHROUGH}
+    public void applyStyles(Set&amp;lt;TextStyle&gt; styles){...}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下面是将&lt;code&gt;EnumSet&lt;/code&gt;实例传递给&lt;code&gt;applyStyles&lt;/code&gt;方法的客户端代码。&lt;code&gt;EnumSet&lt;/code&gt;提供了丰富的静态工厂来创建集合，其中一个如这个代码所示：&lt;code&gt;text.applyStyles(EnumSet.of(TextStyle.BOLD,TextStyle.ITALIC));&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5&gt;33.用EnumMap代替序数索引&lt;/h5&gt;
+
+&lt;p&gt;序数索引是指依赖于枚举成员在枚举中的序数来进行数组索引，如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Plant{
+    public enum Type { Fruit, Vegetables, Tree}
+    private final String name;
+    private final Type type;
+
+    Plant(String name, Type type){
+        this.name = name;
+        this.type = type;
+    }
+}
+
+Set&amp;lt;Plant&gt;[] plants = (Set&lt;Plant&gt;[]) new Set[Plant.Type.valuse().lenght]; 
+//根据植物的类型，分别把所有的植物放入三个set中
+for(int i = 0; i &lt; plant.lenght; i++){
+   plant[i] = new HashSet&lt;Plant&gt;();
+}
+
+for(Plant p : garden){  //garden里放了所有的植物
+    plant[p.type.ordinal()].add(p)  //反面教材：利用了枚举的序数来得到想要的数组索引，用户在其他地方可以不使用ordinal函数，而直接使用int值来访问，就可能出错
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;应该使用&lt;code&gt;EnumMap&lt;/code&gt;来实现，&lt;code&gt;EnumMap&lt;/code&gt;内部是采用数组实现的，具有&lt;code&gt;Map&lt;/code&gt;的丰富功能和类型安全以及数组的效率：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Map&amp;lt;Plant.Type, Set&lt;Plant&gt;&gt; plants = new EnumMap&amp;lt;Plant.Type, Set&lt;Plant&gt;&gt;(Plant.Type.class);  //构造函数需要 键 类型的Class对象
+//根据植物的类型，分别把所有的植物放入三个set中
+for(Plant.Type type : Plant.Type.valuse()){
+   plant.put(type, new HashSet&lt;Plant&gt;);
+}
+
+for(Plant p : garden){  //garden里放了所有的植物
+    plant.get(p.type).add(p)  //用户必须使用正确的键值来访问，即Type类型
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当需要多维关系时，可以使用&lt;code&gt;EnumMap&amp;lt;..., EnumMap&amp;lt;...&amp;gt;&amp;gt;&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h5&gt;34.用接口模拟可伸缩的枚举&lt;/h5&gt;
+
+&lt;p&gt;虽然无法编写可扩展的枚举类型，却可以通过编写接口以及实现该接口的基础枚举类型，对它进行模拟。这样允许客户端编写自己的枚举来实现接口。如果API是根据接口编写的，那么在可以使用基础枚举类型的任何地方，也都可以使用这些枚举。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public interface Operation{
+    double apply(double x,double y);
+}
+
+public enum BasicOperation implements Operation{
+
+    PLUS(&#34;^&#34;){
+        public double apply(double x,double y){ return Math.pow(x,y);}
+    },
+    MINUS(&#34;%&#34;){
+        public double apply(double x,double y){ return x % y;}
+    };
+
+    private final String symbool;
+    BasicOperation(String symbool){ this.symbool = symbool}
+
+    @Override
+    public String toString() {
+        return symbool;
+    }
+
+    @Override
+    public double apply(double x, double y) {
+        return 0;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以通过以下两种方法传递完整的扩展枚举类型，并使用它的元素：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;&amp;lt;T extends Enum&amp;lt;T&amp;gt; &amp;amp; Operation&amp;gt; Class&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;Collection&amp;lt;? Extends Operation&amp;gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;35.注解优先于命名模式&lt;/h5&gt;
+
+&lt;p&gt;命名模式的缺点：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;无法处理命名失误的情况；&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;无法确保它们只用于响应的程序元素上；&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;他们没有提供将参数值与程序元素关联起来的好方法。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;36.坚持使用Override注解&lt;/h5&gt;
+
+&lt;p&gt;在每个方法声明中使用&lt;code&gt;Override&lt;/code&gt;注解来覆盖超类声明。&lt;/p&gt;
+
+&lt;h5&gt;37.用标记接口定义类型&lt;/h5&gt;
+
+&lt;p&gt;标记接口定义的类型是由被标记类的实例实现的；标记注解则没有定义这样的类型；标记接口可以被更加精确地进行锁定。&lt;/p&gt;
+
+&lt;p&gt;标记注解胜过标记接口的最大优点在于，它可以通过默认的方式添加一个或者多个注解类型元素，给已被使用的注解类型添加更多的信息，它的另一个优点在于它们使更大的注解机制的一部分。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;如果想要定义类型，一定要使用接口。&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Effective Java ReadingNotes 4</title>
       <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes4/</link>
       <pubDate>Fri, 16 Dec 2016 18:18:24 +0800</pubDate>
@@ -30,6 +220,187 @@
 &lt;p&gt;如果无法消除警告，同时可以证明引起警告的代码是类型安全的，可以用一个&lt;code&gt;@SuppressWarnings(&amp;quot;unchecked&amp;quot;)&lt;/code&gt;注解来禁止这条警告。&lt;strong&gt;应该始终在尽可能小的范围中使用&lt;code&gt;SuppressWarnings&lt;/code&gt;注解，并且每当使用该注解时都要添加一条注释，说明为什么这么做是安全的。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h5&gt;25.列表优先于数组&lt;/h5&gt;
+
+&lt;p&gt;数组是协变且可以具体化的；泛型是不可变的且可以被擦除的。因此，数组提供了运行时的类型安全，但是没有编译时的类型安全，反之，对于泛型也一样。一般来说，数组和泛型不能很好地混合使用。如果你发现自己将它们混合起来使用，并且得到了编译时错误或者警告，你的第一反应就应该是用列表代替数组。&lt;/p&gt;
+
+&lt;h5&gt;26.优先考虑泛型&lt;/h5&gt;
+
+&lt;p&gt;看如下一个简单堆栈的实现：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Stack {
+    pprivate Object[] elements;
+    private int size = 0;
+    private static final int DEFAULT_INITAL_CAPACITY = 16;
+    
+    public Stack() {
+        elements = new Object[DEFAULT_INITAL_CAPACITY];
+    }
+    
+    public void push(Object e) {
+        ensureCapacity();
+        elements[size++] = e;
+    }
+    
+    public Object pop() {
+        if(size == 0) {
+            throw new EmptyStackException();
+        }
+        Object result = elements[--size];
+        elements[size] = null;
+        return result;
+    }
+    
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    private void ensureCapacity() {
+        if(elements.length == size)
+            elements = Arrays.copyOf(elements, 2 * size + 1);
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;将该类泛型化可以提高类型的安全性，方便客户端使用(无需显式强制转换类型)&lt;/p&gt;
+
+&lt;p&gt;用类型参数替换所有的&lt;code&gt;Object&lt;/code&gt;类型：&lt;code&gt;private E[] elements;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;由于不能创建不可具体化类型的数组，所以会报错&lt;code&gt;generic array creation new E[DEFAULT_INITIAL_CAPACITY]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;我们有两种解决办法：&lt;/p&gt;
+
+&lt;p&gt;解决方法：&lt;/p&gt;
+
+&lt;p&gt;1.创建一个&lt;code&gt;Object&lt;/code&gt;数组，并将它转换成泛型数组类型：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;elements = (E[]) new Object[DEFAULT_INITIAL_CAPACITY];&lt;/code&gt;
+错误变成一条警告，因为可以保证类型安全，所以可以用&lt;code&gt;SupressWarning&lt;/code&gt;注释忽略掉该警告。&lt;/p&gt;
+
+&lt;p&gt;2.将&lt;code&gt;elements&lt;/code&gt;域的类型从&lt;code&gt;E[]&lt;/code&gt;改为&lt;code&gt;Object[]&lt;/code&gt;：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;private Object[] elements;
+
+E result = (E) elements[--size];&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;产生一条警告，因为可以保证类型安全，所以可以用&lt;code&gt;SupressWarning&lt;/code&gt;注释忽略掉该警告。&lt;/p&gt;
+
+&lt;p&gt;这两种方法，一般来说禁止数组类型的未受检转换比禁止标题类型更危险，所以建议使用第二种方法。但是在比这个例子更实际的泛型中，或许代码中会有多个地方需要从数组中读取元素，因此第一种方法比第二种方法开销更小一些，这也是第一种方法更常用的原因。这个例子看起来违反了&lt;code&gt;25&lt;/code&gt;条(它告诉我们对于泛型列表要优于数组)，实际上因为&lt;code&gt;Java&lt;/code&gt;并不是生来就支持列表，所以有些泛型如&lt;code&gt;ArrayList&lt;/code&gt;必须使用数组来实现，有的时候为了提升性能，也会考虑用数组来实现，比如&lt;code&gt;HashMap&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;总之，使用泛型比使用需要在客户端代码中进行转化的类型来的更安全。也更容易，在设计新类的时候，要确保它们不需要这种转换就可以使用。这通常意味着要把类做成是泛型的。&lt;/p&gt;
+
+&lt;h5&gt;27.优先考虑泛型方法&lt;/h5&gt;
+
+&lt;p&gt;考虑如下的方法，它的作用是返回两个集合的联合：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static Set union(Set s1, Set s2) {  
+    Set result = new HashSet(s1);  
+    result.addAll(s2);  
+    return result;  
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;编译这段代码会产生警告，为了修正这些警告(在新代码中不应该直接使用原始类型，当前是为了举例子)要将方法声名修改为声明一个类型参数，表示这三个元素类型(两个参数及一个返回值)，并在方法中使用类型参数。声名类型参数的类型参数列表，处在方法的修饰符及其返回类型之间，修改后的代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &lt;E&gt; Set&lt;E&gt; union(Set&lt;E&gt; s1, Set&lt;E&gt; s2) {  
+    Set&lt;E&gt; result = new HashSet&lt;E&gt;(s1);  
+    result.addAll(s2);  
+    return result;  
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当前这个版本的&lt;code&gt;union&lt;/code&gt;方法即为一般的泛型方法，但是它有一个限制，要求三个集合的类型(两个输入参数及一个返回值)必须全部相同。利用有限制的通配符类型可以使这个方法变得更回灵活。&lt;/p&gt;
+
+&lt;p&gt;泛型方法的一个显著特征是，无需明确指定类型参数的值，不像调用泛型构造器的时候是必须要指定类型参数的，在为泛型方法的类型会存在一个类型推导的过程。编译器通过检查方法参数的类型来计算类型的值。在调用 泛型构造器的时候，要明确传递类型参数的值可能有点麻烦。类型参数出现在了变量的声明的左右两边，显得冗余：&lt;code&gt;Map&amp;lt;String, List&amp;lt;String&amp;gt;&amp;gt; anagrams = new HashMap&amp;lt;String, List&amp;lt;String&amp;gt;&amp;gt;();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;对于这情况，可以遵照第&lt;code&gt;1&lt;/code&gt;条，提供一个静态工厂方法来简化：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static &lt;K, V&gt; HashMap&lt;K, V&gt; newHashMap() {  
+    return new HashMap&lt;K, V&gt;();  
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;利用上面的静态工厂方法，我们可以把变量声明右侧的参数类型省略掉，当参数类型多而复杂时尤其有效。&lt;/p&gt;
+
+&lt;p&gt;有时会需要创建不可变但是又适合于许多不同类型的对象，由于泛型是通过擦除来实现的，可以给所有的必要的类型参数使用同一个单个对象，但是需要一个静态的工厂方法来给每个必要的类型参数分发对象。这种模式叫做&amp;rdquo;泛型单例工厂&amp;rdquo;，这种模式最常用于函数的对象。假设有一个接口，描述了一个方法，该方法接受和返回某个类型&lt;code&gt;T&lt;/code&gt;的值：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public interface UnaryFunction&lt;T&gt; {  
+    T apply(T arg);
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;现在假设要提供一个恒等函数，如果 在每次需要的时候都重新创建一个这样会很浪费，因为它是无状态的。如果泛型被具体化，那个每个类型都必须持有相应类型的恒等函数，但是在运行时擦除类型信息后，它们并没有什么区别，所以在这种情况下，只需要一个泛型单例就够了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;private static UnaryFunction
+ INDENTITY_FUNCTION = new UnaryFunction {
+    public Object apply(Object arg) { return arg; }  
+}; 
+
+@SuppressWarnings(&#34;unchecked&#34;)
+public static  UnaryFunction indentityFunction() {
+    return (UnaryFunction)INDENTITY_FUNCTION;
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;递归类型限制最普遍的用途与&lt;code&gt;Comparable&lt;/code&gt;接口有关，它定义类型的自然顺序。许多方法都带有一个实现&lt;code&gt;Comparable&lt;/code&gt;接口的元素列表，为了对列表进行排序，并在其中进行搜索，计算出它的最小值或者最大值等等。要完成这其中的任何一项工作要求列表中的每个元素都能够与列表中的其他元素相比较，一个示例：&lt;code&gt;public static &amp;lt;T extends Comparable&amp;lt;T&amp;gt;&amp;gt; T max(List&amp;lt;T&amp;gt; list) {  }&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;上面的声名要求&lt;code&gt;T&lt;/code&gt;是可以与自身同类型对象相比较的类型，&lt;code&gt;extends&lt;/code&gt;可以解释为&amp;rdquo;实现某功能&amp;rdquo;。&lt;/p&gt;
+
+&lt;p&gt;总之，泛型方法就像泛型一样，使用起来比要求客户端转换输入参数并返回值的方法来的更加安全，也更加容易。就像类型一样，你应该确保新的方法可以不用转换就能使用，这通常意味着要将它们泛型化。并且就像类型一样，还应该将现有的方法泛型化，使新用户使用起来更加轻松，且不会破坏现有的客户端。&lt;/p&gt;
+
+&lt;h5&gt;28.利用有限制通配符来提升API的灵活性&lt;/h5&gt;
+
+&lt;p&gt;为了获得最大限度的灵活性，要在表示生产者或者消费者的输入参数上使用通配符类型。&lt;code&gt;PESC&lt;/code&gt;表示&lt;code&gt;producter-extends&lt;/code&gt;, &lt;code&gt;consumer-super&lt;/code&gt;。如果参数化类型表示一个&lt;code&gt;T&lt;/code&gt;生产者，就使用&lt;code&gt;&amp;lt;? extends T&amp;gt;&lt;/code&gt;；如果它表示一个&lt;code&gt;T&lt;/code&gt;消费者，就使用&lt;code&gt;&amp;lt;? super T&amp;gt;&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;如果类型参数只在方法声明中出现一次，就可以用通配符取代它。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static void swap(List&lt;?&gt; list, int i, int j) {  
+    swapHelper(list, i, j);  
+}  
+  
+private static &lt;E&gt; void swapHelper(List&lt;E&gt; list, int i, int j) {  
+    list.set(i, list.set(j, list.get(i)));  
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;所有的&lt;code&gt;comparable&lt;/code&gt;和&lt;code&gt;comparator&lt;/code&gt;都是消费者。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h5&gt;29.优先考虑类型安全的异构容器&lt;/h5&gt;
+
+&lt;p&gt;有时会需要未限定固定数目的类型参数的容器，此时，可以将容器的键进行参数化而不是将容器参数化。然后将参数化的键交给容器来插入或者获得值。用泛型系统来确保值的类型和它的键相符。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class ManyTypeClass
+{
+    //一个存放数据的容器,由于键值类型是不确定的，那么值类型就只能是object类型
+    private Map&lt;Class&lt;?&gt;, Object&gt; data = new HashMap&lt;Class&lt;?&gt;, Object&gt;();
+    
+    public &lt;T&gt; void putData(Class&lt;T&gt; type, T instance)
+    {
+        //吧数据放入进去
+        if(type != null)
+        {
+            //这里需要进行一下类型转换，通过Class的cast方法，因为泛型是基于擦除的，如果不进行验证的话，那么插入的数据到底是不是真的type类型就无法确定的了
+            data.put(type, type.cast(instance));
+        }
+    }
+    
+    public &lt;T&gt; T getDate(Class&lt;T&gt; type)
+    {
+        //取出数据,由于数据存放进去是object类型的，那么取出来的时候就需要进行一次类型转换
+        return type.cast(data.get(type));
+    }
+    
+    public static void main(String[] args)
+    {
+        ManyTypeClass mtc = new ManyTypeClass();
+        mtc.putData(String.class, &#34;cutter_point&#34;);
+        mtc.putData(Integer.class, 0xcab145de);
+        mtc.putData(Class.class, ManyTypeClass.class);
+        mtc.putData(ManyTypeClass.class, mtc);
+        
+        String dataString = mtc.getDate(String.class);
+        int dataInteger = mtc.getDate(Integer.class);
+        Class&lt;?&gt; dataClass = mtc.getDate(Class.class);
+        ManyTypeClass mtc1 = mtc.getDate(ManyTypeClass.class);
+        
+        System.out.printf(&#34;%s %x %s %s%n&#34;, dataString,
+                dataInteger, dataClass.getName(), mtc1.getDate(String.class));
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;不能存储&lt;code&gt;List&amp;lt;String&amp;gt;&lt;/code&gt;。因为在运行时他们的类型会被擦除，所以&lt;code&gt;List&amp;lt;String&amp;gt;&lt;/code&gt;与&lt;code&gt;List&amp;lt;Integer&amp;gt;&lt;/code&gt;实际上是共用一个Class。&lt;/p&gt;
 </description>
     </item>
     

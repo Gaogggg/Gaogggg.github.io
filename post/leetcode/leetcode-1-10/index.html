@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    
+        <meta name="twitter:card" content="summary"/>
+    
+
+
+
+<meta name="twitter:title" content="LeetCode 1 - 10"/>
+<meta name="twitter:description" content="1. Two Sum public class Solution { public int[] twoSum(int[] nums, int target) { int result[] = new int[2]; Mapmap = new HashMap(); for(int i = 0; i  2. Add Two Numbers /** * Definition for singly-linked list. * public class ListNode { * int val; * ListNode next; * ListNode(int x) { val = x; } * } */ public class Solution { public ListNode addTwoNumbers(ListNode l1, ListNode l2) { ListNode result = new ListNode(0); ListNode temp = result; int sum = 0; while(l1 !"/>
+
+
+
+  	<meta property="og:title" content=" LeetCode 1 - 10 &middot;  Gaoge&#39;s island" />
+  	<meta property="og:site_name" content="Gaoge&#39;s island" />
+  	<meta property="og:url" content="https://gaogggg.github.io/post/leetcode/leetcode-1-10/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-12-19T16:16:24&#43;08:00" />
+
+    
+    <meta property="og:article:tag" content="java" />
+    
+    <meta property="og:article:tag" content="leetcode" />
+    
+    
+
+    <title>
+       LeetCode 1 - 10 &middot;  Gaoge&#39;s island
+    </title>
+
+    <meta name="description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://gaogggg.github.io/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://gaogggg.github.io/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
+
+    
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+    
+      
+          <link href="https://gaogggg.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Gaoge&#39;s island" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://gaogggg.github.io/post/leetcode/leetcode-1-10/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Home</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/android">Android</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/readingnotes">ReadingNotes</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/leetcode">LeetCode</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/java">Java</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">send email to me</a>
+            </li>
+        
+    </ul>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="blog-logo" href="https://gaogggg.github.io/"><img src="https://gaogggg.github.io/images/logo.png" alt="Home" /></a>
+  
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">LeetCode 1 - 10</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-12-19T16:16:24&#43;08:00">
+            Dec 19, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/java/">#java</a></span>
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/leetcode/">#leetcode</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <h5>1. Two Sum</h5>
+
+<pre><code class="language-java">public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        int result[] = new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < nums.length; i++){
+            if(map.containsKey(target - nums[i])){
+                result[1] = i;
+                result[0] = map.get(target - nums[i]);
+                return result;
+            }
+            map.put(nums[i], i);
+        }
+        return result;
+    }
+}</code></pre>
+
+<h5>2. Add Two Numbers</h5>
+
+<pre><code class="language-java">/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode result = new ListNode(0);
+        ListNode temp = result;
+        int sum = 0;
+        while(l1 != null || l2 != null){
+            sum/=10;
+            if(l1 != null){
+                sum += l1.val;
+                l1 = l1.next;
+            }
+            if(l2 != null){
+                sum += l2.val;
+                l2 = l2.next;
+            }
+            temp.next = new ListNode(sum%10);
+            temp = temp.next;
+        }
+        if(sum/10 >= 1){
+            temp.next = new ListNode(sum/10);
+        }
+        return result.next;
+    }
+}</code></pre>
+
+<h5>3. Longest Substring Without Repeating Characters</h5>
+
+<pre><code class="language-java">public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if(0 == s.length()) return 0;
+        Map<Character, Integer> map = new HashMap<>();
+        int max = 0;
+        for(int i = 0, j = 0; i<s.length(); i++){
+            if(map.containsKey(s.charAt(i))){
+                j = Math.max(j, map.get(s.charAt(i))+1);
+            }
+            map.put(s.charAt(i), i);
+            max = Math.max(max, i - j + 1);
+        }
+        return max;
+    }
+}</code></pre>
+
+<h5>4. Median of Two Sorted Arrays</h5>
+
+<pre><code class="language-java">public class Solution {
+    public double findMedianSortedArrays(int[] A, int[] B) {
+        int m = A.length, n = B.length;
+        int l = (m + n + 1) / 2;
+        int r = (m + n + 2) / 2;
+        return (getkth(A, 0, B, 0, l) + getkth(A, 0, B, 0, r)) / 2.0;
+    }
+
+    public double getkth(int[] A, int aStart, int[] B, int bStart, int k) {
+        if (aStart > A.length - 1) return B[bStart + k - 1];            
+        if (bStart > B.length - 1) return A[aStart + k - 1];                
+        if (k == 1) return Math.min(A[aStart], B[bStart]);
+    
+        int aMid = Integer.MAX_VALUE, bMid = Integer.MAX_VALUE;
+        if (aStart + k/2 - 1 < A.length) aMid = A[aStart + k/2 - 1]; 
+        if (bStart + k/2 - 1 < B.length) bMid = B[bStart + k/2 - 1];        
+    
+        if (aMid < bMid) 
+            return getkth(A, aStart + k/2, B, bStart,       k - k/2); 
+        else 
+            return getkth(A, aStart,       B, bStart + k/2, k - k/2);
+    }
+}</code></pre>
+
+<h5>5. Longest Palindromic Substring</h5>
+
+<pre><code class="language-java">public class Solution {
+    private int lo, maxLen;
+    
+    public String longestPalindrome(String s) {
+        if (s.length() < 2){
+            return s;
+        }
+    
+        for (int i = 0; i < s.length()-1; i++) {
+            extendPalindrome(s, i, i);  //assume odd length, try to extend Palindrome as possible
+            extendPalindrome(s, i, i+1); //assume even length.
+        }
+        return s.substring(lo, lo + maxLen);
+    }
+    
+    private void extendPalindrome(String s, int j, int k) {
+        while (j >= 0 && k < s.length() && s.charAt(j) == s.charAt(k)) {
+            j--;
+            k++;
+        }
+        if (maxLen < k - j - 1) {
+            lo = j + 1;
+            maxLen = k - j - 1;
+        }
+    }
+}</code></pre>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="https://gaogggg.github.io/" style="background-image: url(https://gaogggg.github.io/images/logo.png)"><span class="hidden">gaoge's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="https://gaogggg.github.io/">gaoge</a></h4>
+  
+  <p>A student.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Beijing, China</span>
+    <span class="author-link icon-link"><a href="http://gaogggg.github.io">http://gaogggg.github.io</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=LeetCode%201%20-%2010&nbsp;-&nbsp;Gaoge%27s%20island&amp;url=https%3a%2f%2fgaogggg.github.io%2fpost%2fleetcode%2fleetcode-1-10%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fgaogggg.github.io%2fpost%2fleetcode%2fleetcode-1-10%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fgaogggg.github.io%2fpost%2fleetcode%2fleetcode-1-10%2f&amp;description=LeetCode%201%20-%2010"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=https%3a%2f%2fgaogggg.github.io%2fpost%2fleetcode%2fleetcode-1-10%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+<div class="ds-thread" data-thread-key="" data-title="" data-url="/post/leetcode/leetcode-1-10/"></div>
+
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gaoge"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Gaoge&#39;s island</a> All rights reserved - 2016</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/index.js"></script>
+    
+</body>
+</html>
+

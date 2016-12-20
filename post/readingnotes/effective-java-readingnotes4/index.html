@@ -20,7 +20,9 @@ Effective Java第5章 泛型
 23.请不要在新代码中使用原生态类型 Set&lt;Object&gt;是个参数化类型，表示可以包含任何对象类型的一个集合；Set&lt;?&gt;则是一个通配符类型，表示只能包含某种未知对象类型的一个集合；Set则是个原生态类型，它脱离了泛型系统。前两种是安全的，最后一种不安全。
 24.消除非受检警告 本处主要介绍比较难以消除的警告的示例。
 如果无法消除警告，同时可以证明引起警告的代码是类型安全的，可以用一个@SuppressWarnings(&quot;unchecked&quot;)注解来禁止这条警告。应该始终在尽可能小的范围中使用SuppressWarnings注解，并且每当使用该注解时都要添加一条注释，说明为什么这么做是安全的。
-25.列表优先于数组 "/>
+25.列表优先于数组 数组是协变且可以具体化的；泛型是不可变的且可以被擦除的。因此，数组提供了运行时的类型安全，但是没有编译时的类型安全，反之，对于泛型也一样。一般来说，数组和泛型不能很好地混合使用。如果你发现自己将它们混合起来使用，并且得到了编译时错误或者警告，你的第一反应就应该是用列表代替数组。
+26.优先考虑泛型 看如下一个简单堆栈的实现：
+public class Stack { pprivate Object[] elements; private int size = 0; private static final int DEFAULT_INITAL_CAPACITY = 16; public Stack() { elements = new Object[DEFAULT_INITAL_CAPACITY]; } public void push(Object e) { ensureCapacity(); elements[size&#43;&#43;] = e; } public Object pop() { if(size == 0) { throw new EmptyStackException(); } Object result = elements[--size]; elements[size] = null; return result; } public boolean isEmpty() { return size == 0; } private void ensureCapacity() { if(elements."/>
 
 
 
@@ -90,12 +92,32 @@ Effective Java第5章 泛型
         
             
             <li class="nav-opened" role="presentation">
-            	<a href="/">HOME</a>
+            	<a href="/">Home</a>
             </li>
         
-            <h3>Contact me</h3>
+            
             <li class="nav-opened" role="presentation">
-            	<a href="mailto:gg1993@pku.edu.cn">email</a>
+            	<a href="/tags/android">Android</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/readingnotes">ReadingNotes</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/leetcode">LeetCode</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/java">Java</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">send email to me</a>
             </li>
         
     </ul>
@@ -165,6 +187,187 @@ Effective Java第5章 泛型
 <p>如果无法消除警告，同时可以证明引起警告的代码是类型安全的，可以用一个<code>@SuppressWarnings(&quot;unchecked&quot;)</code>注解来禁止这条警告。<strong>应该始终在尽可能小的范围中使用<code>SuppressWarnings</code>注解，并且每当使用该注解时都要添加一条注释，说明为什么这么做是安全的。</strong></p>
 
 <h5>25.列表优先于数组</h5>
+
+<p>数组是协变且可以具体化的；泛型是不可变的且可以被擦除的。因此，数组提供了运行时的类型安全，但是没有编译时的类型安全，反之，对于泛型也一样。一般来说，数组和泛型不能很好地混合使用。如果你发现自己将它们混合起来使用，并且得到了编译时错误或者警告，你的第一反应就应该是用列表代替数组。</p>
+
+<h5>26.优先考虑泛型</h5>
+
+<p>看如下一个简单堆栈的实现：</p>
+
+<pre><code class="language-java">public class Stack {
+    pprivate Object[] elements;
+    private int size = 0;
+    private static final int DEFAULT_INITAL_CAPACITY = 16;
+    
+    public Stack() {
+        elements = new Object[DEFAULT_INITAL_CAPACITY];
+    }
+    
+    public void push(Object e) {
+        ensureCapacity();
+        elements[size++] = e;
+    }
+    
+    public Object pop() {
+        if(size == 0) {
+            throw new EmptyStackException();
+        }
+        Object result = elements[--size];
+        elements[size] = null;
+        return result;
+    }
+    
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    private void ensureCapacity() {
+        if(elements.length == size)
+            elements = Arrays.copyOf(elements, 2 * size + 1);
+    }
+}</code></pre>
+
+<p>将该类泛型化可以提高类型的安全性，方便客户端使用(无需显式强制转换类型)</p>
+
+<p>用类型参数替换所有的<code>Object</code>类型：<code>private E[] elements;</code></p>
+
+<p>由于不能创建不可具体化类型的数组，所以会报错<code>generic array creation new E[DEFAULT_INITIAL_CAPACITY]</code></p>
+
+<p>我们有两种解决办法：</p>
+
+<p>解决方法：</p>
+
+<p>1.创建一个<code>Object</code>数组，并将它转换成泛型数组类型：</p>
+
+<p><code>elements = (E[]) new Object[DEFAULT_INITIAL_CAPACITY];</code>
+错误变成一条警告，因为可以保证类型安全，所以可以用<code>SupressWarning</code>注释忽略掉该警告。</p>
+
+<p>2.将<code>elements</code>域的类型从<code>E[]</code>改为<code>Object[]</code>：</p>
+
+<pre><code class="language-java">private Object[] elements;
+
+E result = (E) elements[--size];</code></pre>
+
+<p>产生一条警告，因为可以保证类型安全，所以可以用<code>SupressWarning</code>注释忽略掉该警告。</p>
+
+<p>这两种方法，一般来说禁止数组类型的未受检转换比禁止标题类型更危险，所以建议使用第二种方法。但是在比这个例子更实际的泛型中，或许代码中会有多个地方需要从数组中读取元素，因此第一种方法比第二种方法开销更小一些，这也是第一种方法更常用的原因。这个例子看起来违反了<code>25</code>条(它告诉我们对于泛型列表要优于数组)，实际上因为<code>Java</code>并不是生来就支持列表，所以有些泛型如<code>ArrayList</code>必须使用数组来实现，有的时候为了提升性能，也会考虑用数组来实现，比如<code>HashMap</code>。</p>
+
+<p>总之，使用泛型比使用需要在客户端代码中进行转化的类型来的更安全。也更容易，在设计新类的时候，要确保它们不需要这种转换就可以使用。这通常意味着要把类做成是泛型的。</p>
+
+<h5>27.优先考虑泛型方法</h5>
+
+<p>考虑如下的方法，它的作用是返回两个集合的联合：</p>
+
+<pre><code class="language-java">public static Set union(Set s1, Set s2) {  
+    Set result = new HashSet(s1);  
+    result.addAll(s2);  
+    return result;  
+}</code></pre>
+
+<p>编译这段代码会产生警告，为了修正这些警告(在新代码中不应该直接使用原始类型，当前是为了举例子)要将方法声名修改为声明一个类型参数，表示这三个元素类型(两个参数及一个返回值)，并在方法中使用类型参数。声名类型参数的类型参数列表，处在方法的修饰符及其返回类型之间，修改后的代码如下：</p>
+
+<pre><code class="language-java">public static <E> Set<E> union(Set<E> s1, Set<E> s2) {  
+    Set<E> result = new HashSet<E>(s1);  
+    result.addAll(s2);  
+    return result;  
+}</code></pre>
+
+<p>当前这个版本的<code>union</code>方法即为一般的泛型方法，但是它有一个限制，要求三个集合的类型(两个输入参数及一个返回值)必须全部相同。利用有限制的通配符类型可以使这个方法变得更回灵活。</p>
+
+<p>泛型方法的一个显著特征是，无需明确指定类型参数的值，不像调用泛型构造器的时候是必须要指定类型参数的，在为泛型方法的类型会存在一个类型推导的过程。编译器通过检查方法参数的类型来计算类型的值。在调用 泛型构造器的时候，要明确传递类型参数的值可能有点麻烦。类型参数出现在了变量的声明的左右两边，显得冗余：<code>Map&lt;String, List&lt;String&gt;&gt; anagrams = new HashMap&lt;String, List&lt;String&gt;&gt;();</code></p>
+
+<p>对于这情况，可以遵照第<code>1</code>条，提供一个静态工厂方法来简化：</p>
+
+<pre><code class="language-java">public static <K, V> HashMap<K, V> newHashMap() {  
+    return new HashMap<K, V>();  
+}</code></pre>
+
+<p>利用上面的静态工厂方法，我们可以把变量声明右侧的参数类型省略掉，当参数类型多而复杂时尤其有效。</p>
+
+<p>有时会需要创建不可变但是又适合于许多不同类型的对象，由于泛型是通过擦除来实现的，可以给所有的必要的类型参数使用同一个单个对象，但是需要一个静态的工厂方法来给每个必要的类型参数分发对象。这种模式叫做&rdquo;泛型单例工厂&rdquo;，这种模式最常用于函数的对象。假设有一个接口，描述了一个方法，该方法接受和返回某个类型<code>T</code>的值：</p>
+
+<pre><code class="language-java">public interface UnaryFunction<T> {  
+    T apply(T arg);
+}</code></pre>
+
+<p>现在假设要提供一个恒等函数，如果 在每次需要的时候都重新创建一个这样会很浪费，因为它是无状态的。如果泛型被具体化，那个每个类型都必须持有相应类型的恒等函数，但是在运行时擦除类型信息后，它们并没有什么区别，所以在这种情况下，只需要一个泛型单例就够了。</p>
+
+<pre><code class="language-java">private static UnaryFunction
+ INDENTITY_FUNCTION = new UnaryFunction {
+    public Object apply(Object arg) { return arg; }  
+}; 
+
+@SuppressWarnings("unchecked")
+public static  UnaryFunction indentityFunction() {
+    return (UnaryFunction)INDENTITY_FUNCTION;
+}</code></pre>
+
+<p>递归类型限制最普遍的用途与<code>Comparable</code>接口有关，它定义类型的自然顺序。许多方法都带有一个实现<code>Comparable</code>接口的元素列表，为了对列表进行排序，并在其中进行搜索，计算出它的最小值或者最大值等等。要完成这其中的任何一项工作要求列表中的每个元素都能够与列表中的其他元素相比较，一个示例：<code>public static &lt;T extends Comparable&lt;T&gt;&gt; T max(List&lt;T&gt; list) {  }</code></p>
+
+<p>上面的声名要求<code>T</code>是可以与自身同类型对象相比较的类型，<code>extends</code>可以解释为&rdquo;实现某功能&rdquo;。</p>
+
+<p>总之，泛型方法就像泛型一样，使用起来比要求客户端转换输入参数并返回值的方法来的更加安全，也更加容易。就像类型一样，你应该确保新的方法可以不用转换就能使用，这通常意味着要将它们泛型化。并且就像类型一样，还应该将现有的方法泛型化，使新用户使用起来更加轻松，且不会破坏现有的客户端。</p>
+
+<h5>28.利用有限制通配符来提升API的灵活性</h5>
+
+<p>为了获得最大限度的灵活性，要在表示生产者或者消费者的输入参数上使用通配符类型。<code>PESC</code>表示<code>producter-extends</code>, <code>consumer-super</code>。如果参数化类型表示一个<code>T</code>生产者，就使用<code>&lt;? extends T&gt;</code>；如果它表示一个<code>T</code>消费者，就使用<code>&lt;? super T&gt;</code>。</p>
+
+<p>如果类型参数只在方法声明中出现一次，就可以用通配符取代它。</p>
+
+<pre><code class="language-java">public static void swap(List<?> list, int i, int j) {  
+    swapHelper(list, i, j);  
+}  
+  
+private static <E> void swapHelper(List<E> list, int i, int j) {  
+    list.set(i, list.set(j, list.get(i)));  
+}</code></pre>
+
+<p><strong>所有的<code>comparable</code>和<code>comparator</code>都是消费者。</strong></p>
+
+<h5>29.优先考虑类型安全的异构容器</h5>
+
+<p>有时会需要未限定固定数目的类型参数的容器，此时，可以将容器的键进行参数化而不是将容器参数化。然后将参数化的键交给容器来插入或者获得值。用泛型系统来确保值的类型和它的键相符。</p>
+
+<pre><code class="language-java">public class ManyTypeClass
+{
+    //一个存放数据的容器,由于键值类型是不确定的，那么值类型就只能是object类型
+    private Map<Class<?>, Object> data = new HashMap<Class<?>, Object>();
+    
+    public <T> void putData(Class<T> type, T instance)
+    {
+        //吧数据放入进去
+        if(type != null)
+        {
+            //这里需要进行一下类型转换，通过Class的cast方法，因为泛型是基于擦除的，如果不进行验证的话，那么插入的数据到底是不是真的type类型就无法确定的了
+            data.put(type, type.cast(instance));
+        }
+    }
+    
+    public <T> T getDate(Class<T> type)
+    {
+        //取出数据,由于数据存放进去是object类型的，那么取出来的时候就需要进行一次类型转换
+        return type.cast(data.get(type));
+    }
+    
+    public static void main(String[] args)
+    {
+        ManyTypeClass mtc = new ManyTypeClass();
+        mtc.putData(String.class, "cutter_point");
+        mtc.putData(Integer.class, 0xcab145de);
+        mtc.putData(Class.class, ManyTypeClass.class);
+        mtc.putData(ManyTypeClass.class, mtc);
+        
+        String dataString = mtc.getDate(String.class);
+        int dataInteger = mtc.getDate(Integer.class);
+        Class<?> dataClass = mtc.getDate(Class.class);
+        ManyTypeClass mtc1 = mtc.getDate(ManyTypeClass.class);
+        
+        System.out.printf("%s %x %s %s%n", dataString,
+                dataInteger, dataClass.getName(), mtc1.getDate(String.class));
+    }
+}</code></pre>
+
+<p>不能存储<code>List&lt;String&gt;</code>。因为在运行时他们的类型会被擦除，所以<code>List&lt;String&gt;</code>与<code>List&lt;Integer&gt;</code>实际上是共用一个Class。</p>
 
     </section>
 

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gaoge&#39;s island</title>
+    <link>https://Gaogggg.github.io/tags/leetcode/index.xml</link>
+    <description>Recent content on Gaoge&#39;s island</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>All rights reserved - 2016</copyright>
+    <atom:link href="https://Gaogggg.github.io/tags/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>LeetCode 1 - 10</title>
+      <link>https://gaogggg.github.io/post/leetcode/leetcode-1-10/</link>
+      <pubDate>Mon, 19 Dec 2016 16:16:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/leetcode/leetcode-1-10/</guid>
+      <description>&lt;h5&gt;1. Two Sum&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        int result[] = new int[2];
+        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; nums.length; i++){
+            if(map.containsKey(target - nums[i])){
+                result[1] = i;
+                result[0] = map.get(target - nums[i]);
+                return result;
+            }
+            map.put(nums[i], i);
+        }
+        return result;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;2. Add Two Numbers&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode result = new ListNode(0);
+        ListNode temp = result;
+        int sum = 0;
+        while(l1 != null || l2 != null){
+            sum/=10;
+            if(l1 != null){
+                sum += l1.val;
+                l1 = l1.next;
+            }
+            if(l2 != null){
+                sum += l2.val;
+                l2 = l2.next;
+            }
+            temp.next = new ListNode(sum%10);
+            temp = temp.next;
+        }
+        if(sum/10 &gt;= 1){
+            temp.next = new ListNode(sum/10);
+        }
+        return result.next;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;3. Longest Substring Without Repeating Characters&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if(0 == s.length()) return 0;
+        Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+        int max = 0;
+        for(int i = 0, j = 0; i&lt;s.length(); i++){
+            if(map.containsKey(s.charAt(i))){
+                j = Math.max(j, map.get(s.charAt(i))+1);
+            }
+            map.put(s.charAt(i), i);
+            max = Math.max(max, i - j + 1);
+        }
+        return max;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;4. Median of Two Sorted Arrays&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Solution {
+    public double findMedianSortedArrays(int[] A, int[] B) {
+        int m = A.length, n = B.length;
+        int l = (m + n + 1) / 2;
+        int r = (m + n + 2) / 2;
+        return (getkth(A, 0, B, 0, l) + getkth(A, 0, B, 0, r)) / 2.0;
+    }
+
+    public double getkth(int[] A, int aStart, int[] B, int bStart, int k) {
+        if (aStart &gt; A.length - 1) return B[bStart + k - 1];            
+        if (bStart &gt; B.length - 1) return A[aStart + k - 1];                
+        if (k == 1) return Math.min(A[aStart], B[bStart]);
+    
+        int aMid = Integer.MAX_VALUE, bMid = Integer.MAX_VALUE;
+        if (aStart + k/2 - 1 &lt; A.length) aMid = A[aStart + k/2 - 1]; 
+        if (bStart + k/2 - 1 &lt; B.length) bMid = B[bStart + k/2 - 1];        
+    
+        if (aMid &lt; bMid) 
+            return getkth(A, aStart + k/2, B, bStart,       k - k/2); 
+        else 
+            return getkth(A, aStart,       B, bStart + k/2, k - k/2);
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;5. Longest Palindromic Substring&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Solution {
+    private int lo, maxLen;
+    
+    public String longestPalindrome(String s) {
+        if (s.length() &lt; 2){
+            return s;
+        }
+    
+        for (int i = 0; i &lt; s.length()-1; i++) {
+            extendPalindrome(s, i, i);  //assume odd length, try to extend Palindrome as possible
+            extendPalindrome(s, i, i+1); //assume even length.
+        }
+        return s.substring(lo, lo + maxLen);
+    }
+    
+    private void extendPalindrome(String s, int j, int k) {
+        while (j &gt;= 0 &amp;&amp; k &lt; s.length() &amp;&amp; s.charAt(j) == s.charAt(k)) {
+            j--;
+            k++;
+        }
+        if (maxLen &lt; k - j - 1) {
+            lo = j + 1;
+            maxLen = k - j - 1;
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
