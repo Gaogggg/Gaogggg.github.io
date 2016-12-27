@@ -10,6 +10,144 @@
     <atom:link href="https://gaogggg.github.io/tags/readingnotes/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Effective Java ReadingNotes 7</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes7/</link>
+      <pubDate>Tue, 27 Dec 2016 14:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes7/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(7)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第8章 通用程序设计&lt;/p&gt;
+
+&lt;h5&gt;45.将局部变量的作用域最小化&lt;/h5&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;在第一次使用它的地方声明；&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;几乎每个局部变量的声明都应该包含一个初始化表达式；&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使方法小而集中。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;46.for-each循环优先于传统的for循环&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;for-each&lt;/code&gt;循环在简洁性和预防&lt;code&gt;bug&lt;/code&gt;方面有着传统的&lt;code&gt;for&lt;/code&gt;循环无法比拟的优势，并且没有性能损失。&lt;/p&gt;
+
+&lt;p&gt;三种无法使用&lt;code&gt;for-each&lt;/code&gt;循环的情况：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;过滤——如果需要遍历集合，并删除选定的元素，就需要使用显式的迭代器，以便可以调用它的&lt;code&gt;remove&lt;/code&gt;方法。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;转换——如果需要遍历列表或者数组，并取代它部分或者全部的元素值，就需要列表迭代器或者数组索引，以便设定元素的值。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;平行迭代——如果需要并行地遍历多个集合，就需要显式地控制迭代器或者索引变量，以便所有迭代器或者索引变量都可以得到同步前移。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;47.了解和使用类库&lt;/h5&gt;&lt;br&gt;
+
+&lt;h5&gt;48.如果需要精确的答案，请避免使用float和double&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;float&lt;/code&gt;和&lt;code&gt;double&lt;/code&gt;类型的主要设计目的是为了科学计算和工程计算。它们执行二进制浮点运算，这是为了在广域数值范围上提供较为精确的快速近似计算而精心设计的。然而，它们没有提供完全精确的结果，所以不应该被用于要求精确结果的场合。因为要让一个&lt;code&gt;float&lt;/code&gt;或者&lt;code&gt;double&lt;/code&gt;精确地表示&lt;code&gt;0.1&lt;/code&gt;(或者&lt;code&gt;10&lt;/code&gt;的任何负数次方值)是不可能的，&lt;code&gt;float&lt;/code&gt;和&lt;code&gt;double&lt;/code&gt;类型对于货币计算尤为不合适，因为要让一个&lt;code&gt;float&lt;/code&gt;或&lt;code&gt;double&lt;/code&gt;精确地表示&lt;code&gt;0.1&lt;/code&gt;或&lt;code&gt;10&lt;/code&gt;的任何其他负数次方值是不可能的。比如&lt;code&gt;System.out.println(2.0-1.1)&lt;/code&gt;将会打印&lt;code&gt;0.899999999999999&lt;/code&gt;,而不是你所希望的&lt;code&gt;0.9&lt;/code&gt;，这种舍入错误产生的原因是浮点数实际上是用二进制系统实现的，而分数&lt;code&gt;1/10&lt;/code&gt;在二进制系统中没有精确的表示，其道理就如同在十进制系统中无法精确表示&lt;code&gt;1/3&lt;/code&gt;一样；再比如&lt;code&gt;0.5&lt;/code&gt;在二进制系统中有精确表示，而&lt;code&gt;0.55&lt;/code&gt;在二进制系统中没有精确表示。&lt;/p&gt;
+
+&lt;p&gt;对于任何要精确答案的计算任务，请不要用&lt;code&gt;double&lt;/code&gt;和&lt;code&gt;float&lt;/code&gt;。如果你想计算十进制小数点，并且不介意非基本类型带来的不便，那就用&lt;code&gt;BigDecimal&lt;/code&gt;；使用&lt;code&gt;BigDecimal&lt;/code&gt;还有个额外的好处就是他允许你完全控制舍入，每当一个操作涉及舍入的时候它允许你从&lt;code&gt;8&lt;/code&gt;种舍入模式中选择一种。如果你正确通过法定要求的舍入行为进行业务计算使用&lt;code&gt;BigDecimal&lt;/code&gt;时非常方便的；如果性能十分关键，并且你又不介意自己记录十进制的小数点，而且涉及数值不大，就可以使用&lt;code&gt;int&lt;/code&gt;或者&lt;code&gt;long&lt;/code&gt;；如果数值范围没有超过&lt;code&gt;9&lt;/code&gt;位的十进制数字，可以用&lt;code&gt;int&lt;/code&gt;；如果数值范围没有超过&lt;code&gt;18&lt;/code&gt;位的十进制数字，用&lt;code&gt;long&lt;/code&gt;如果范围超过了&lt;code&gt;18&lt;/code&gt;位数，那我们必须使用&lt;code&gt;BigDecimal&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h5&gt;49.基本类型优先于装箱基本类型&lt;/h5&gt;
+
+&lt;p&gt;基本类型和装箱基本类型的区别：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;基本类型只有值，而装箱基本类型则具有与它们的值不同的同一性。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;基本类型只有功能完备的值，而每个装箱基本类型除了它对应基本类型的所有功能值之外，还有个非功能值：&lt;code&gt;null&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;基本类型通常比装箱基本类型更节省时间和空间。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;当在一项操作中混合使用基本类型和装箱基本类型时，装箱基本类型就会自动拆箱，这种情况无一例外。如果&lt;code&gt;null&lt;/code&gt;对象引用被自动拆箱，就会得到一个&lt;code&gt;NullPointerException&lt;/code&gt;异常。&lt;/p&gt;
+
+&lt;p&gt;装箱基本类型的合理用处：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;作为集合中的元素、键和值。你不能将基本类型放在集合中，因此必须使用装箱基本类型。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;在参数化类型中，必须使用装箱基本类型作为类型参数，因为&lt;code&gt;Java&lt;/code&gt;不允许使用基本类型。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;在进行反射的方法调用时，必须使用装箱基本类型。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;基本类型与装箱基本类型&lt;code&gt;==&lt;/code&gt;比较出现的几种情况：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;Integer.valueOf()&lt;/code&gt;和&lt;code&gt;Integer.intValue()&lt;/code&gt;进行了自动装箱和自动拆箱。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;通过&lt;code&gt;==&lt;/code&gt;对两个&lt;code&gt;new&lt;/code&gt;出来的&lt;code&gt;Integer&lt;/code&gt;类型的实例进行比较时，即使表示相同的数值，由于&lt;code&gt;Integer&lt;/code&gt;类型的数据还要进行同一性的比较，因此不相等。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;通过&lt;code&gt;==&lt;/code&gt;比较两个自动装箱的&lt;code&gt;Integer&lt;/code&gt;实例时，只要两者所表示的数值相同，结果就是相等的，因为它们的同一性是相同的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;通过&lt;code&gt;equals&lt;/code&gt;进行比较的时候，只要同类型（包括自动装箱和拆箱）代表的数值相同，就是相等的。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;50.如果其他类型更适合，则尽量避免使用字符串&lt;/h5&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;字符串不适合代替其他的值类型。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;字符串不适合代替枚举类型。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;字符串不适合代替聚集类型。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;字符串不适合代替能力表。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;51.当心字符串连接的性能&lt;/h5&gt;
+
+&lt;p&gt;由于字符串不可变，为连接&lt;code&gt;n&lt;/code&gt;个字符串而重复地使用字符串连接操作符，需要&lt;code&gt;n&lt;/code&gt;的平方级的时间。考虑使用&lt;code&gt;StringBuilder&lt;/code&gt;替代&lt;code&gt;String&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h5&gt;52.通过接口引用对象&lt;/h5&gt;
+
+&lt;p&gt;如果有合适的接口类型存在，那么对于参数、返回值、变量和域来说，就都应该使用接口类型进行声明。&lt;/p&gt;
+
+&lt;p&gt;比如声明&lt;code&gt;Vector&lt;/code&gt;类，它是&lt;code&gt;List&lt;/code&gt;接口的实现，在声明变量的时候应该养成这样的习惯：&lt;code&gt;List&amp;lt;String&amp;gt;  strs = new Vector&amp;lt;String&amp;gt;();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;而不是这样的声明：&lt;code&gt;Vector&amp;lt;String&amp;gt; strs = new Vector&amp;lt;String&amp;gt;();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果养成用接口作为类型的习惯，你的程序会更加灵活，当你决定更换实现时，所有要做的事只是改变构造器中类的实现，或者使用不同的静态工厂：&lt;code&gt;List&amp;lt;String&amp;gt;  strs = new ArrayList&amp;lt;String&amp;gt;();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;不存在适当接口类型的部分情形：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;值类，比如&lt;code&gt;String&lt;/code&gt;和&lt;code&gt;BigInteger&lt;/code&gt;。记住值类很少会用多个实现编写，它们通常是&lt;code&gt;final&lt;/code&gt;，并且很少有对应的接口。使用值类做参数、变量、域或者返回值类型是再合适不过的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;对象属于框架，而框架的基本类型的类，不是接口。如果对象属于这种基于类的框架，那么就应该使用基类(通常是抽象类)来引用这个对象，而不是实现类。&lt;code&gt;Java.util.TimerTask&lt;/code&gt;抽象类就是这种情景。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;类实现接口，但是它提供接口中不存在的额外方法，如果程序依赖这些额外方法，这种类应该只被用来引用它的实例。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;53.接口优先于反射机制&lt;/h5&gt;
+
+&lt;p&gt;反射的代价：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;丧失了编译时类型检查的好处，包括异常检查。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;执行反射访问所需要的代码非常笨拙和冗长。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;性能损失。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;54.谨慎地使用本地方法&lt;/h5&gt;
+
+&lt;p&gt;本地方法主要有三种用途：1.提供了“访问特定于平台的机制”的能力；2.提供了访问遗留代码库的能力，从而可以访问遗留数据；3.本地方法可以通过本地语言，编写应用程序中注重性能的部分，以提高系统的性能。&lt;/p&gt;
+
+&lt;p&gt;本地方法的缺点：1.不安全；2.与平台相关，使用本地方法的应用程序也不再是可自由移植的；3.更难调试。&lt;/p&gt;
+
+&lt;h5&gt;55.谨慎地进行优化&lt;/h5&gt;&lt;br&gt;
+
+&lt;h5&gt;56.遵守普遍接受的命名惯例&lt;/h5&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Effective Java ReadingNotes 6</title>
       <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes6/</link>
       <pubDate>Tue, 20 Dec 2016 18:18:24 +0800</pubDate>
