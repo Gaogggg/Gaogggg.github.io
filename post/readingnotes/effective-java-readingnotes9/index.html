@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    
+        <meta name="twitter:card" content="summary"/>
+    
+
+
+
+<meta name="twitter:title" content="Effective Java ReadingNotes 9"/>
+<meta name="twitter:description" content="Effective Java阅读笔记(9)
+Effective Java第10章 并发
+66.同步访问共享的可变数据 当多个线程共享可变数据的时候，每个读或者写数据的线程都必须执行同步。
+67.避免过度同步 为了避免死锁和数据破坏，千万不要从同步区域内部调用外来方法，并要尽量限制同步区域内部的工作量。
+68.executor和task优先于线程 现在应当优先使用executor和task而不是Thread，因为在以前Thread既是工作单元又是执行单元，但是现在二者分离，executor是执行单元，Runnable和Callable是工作单元。
+使用ScheduledThreadPool代替Timer作为多线程的定时器。
+对于ThreadPool：
+ 使用Executor.newCachedThreadPool来应对一个轻负载的服务器。 使用Executor.newFixedThreadPool来应对一个重负载的服务器。 为了最大限度控制它，直接使用ThreadPoolExecutor。  69.并发工具优先于wait和notify 考虑使用java.util.concurrent而非wait和notify。如果你在维护使用wait和notify的代码，务必确保始终是利用标准的模式从while循环内部调用wait。一般情况下，你应该优先使用notifyAll，而不是使用notify。如果使用notify，请一定要小心，以确保程序的活性。
+70.线程安全性的文档化 线程安全性的几种级别：
+ 不可变的immutable，这个类的实例是不变的，所以不需要外部的同步。例如：String、Long和BigInteger。
+ 无条件的线程安全unconditionally thread-safe,这个类的实例是可变的，但是这个类有着足够的内部同步，所以它的实例可以被并发使用，无需任何外部同步。例如：Random和ConcurrentHashMap。
+ 有条件的线程安全conditionally thread-safe，除了有些方法为进行安全的并发而使用需要外部同步之外，这种线程安全级别与无条件的线程安全相同。例如：Collections.synchronized包装返回的集合，它们的迭代器iterator要求外部同步。
+ 非线程安全not thread-safe，这个实例是可变的。为了并发地使用它们，客户必须利用自己选择的外部同步包围每个方法调用（或者调用序列）。例如：ArrayList和HashMap。
+ 线程对立的thread-hostie，这个类不能安全地被多个线程并发使用，即使所有的方法调用都被外部同步包围。
+  如果编写无条件的线程安全类，建议使用私有锁，隐藏内部实现，私有锁尤其适合于专门为继承而设计的类。如果编写有条件的线程安全类，一定要在API文档中注明哪个方法调用序列需要外部同步，以及执行这些序列需要哪把锁。
+71.慎用延迟初始化 除非绝对必要，否则就不要这么做。如果域只在类的实例部分被访问，并且初始化这个域的开销很高，可能就值得进行延迟初始化。在大多数情况下，正常的初始化要优先于延迟初始化。
+四种延迟初始化的方式：
+1.最普通的：
+private FieldType field; synchronized Field getField(){ if(field==null){ field=computeFieldValue(); } return field; }  2.对静态域的出于性能考虑的初始化方式：
+private static class FieldHolder{ static final FieldType field=computeFieldValue(); } static FieldType getField(){ return FieldHolder.field; }  3."/>
+
+
+
+  	<meta property="og:title" content=" Effective Java ReadingNotes 9 &middot;  Gaoge&#39;s island" />
+  	<meta property="og:site_name" content="Gaoge&#39;s island" />
+  	<meta property="og:url" content="ggao93.cn" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-12-28T10:18:24&#43;08:00" />
+
+    
+    <meta property="og:article:tag" content="java" />
+    
+    <meta property="og:article:tag" content="readingnotes" />
+    
+    
+
+    <title>
+       Effective Java ReadingNotes 9 &middot;  Gaoge's island
+    </title>
+
+    <meta name="description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://gaogggg.github.io/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://gaogggg.github.io/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
+
+    
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+    
+      
+          <link href="https://gaogggg.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Gaoge&#39;s island" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes9/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Home</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/android">Android</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/readingnotes">ReadingNotes</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/leetcode">LeetCode</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/java">Java</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">send email to me</a>
+            </li>
+        
+    </ul>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="blog-logo" href="https://gaogggg.github.io/"><img src="https://gaogggg.github.io/images/logo.png" alt="Home" /></a>
+  
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">Effective Java ReadingNotes 9</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-12-28T10:18:24&#43;08:00">
+            Dec 28, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/java/">#java</a></span>
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <p>Effective Java阅读笔记(9)</p>
+
+<p>Effective Java第10章 并发</p>
+
+<h5>66.同步访问共享的可变数据</h5>
+
+<p>当多个线程共享可变数据的时候，每个读或者写数据的线程都必须执行同步。</p>
+
+<h5>67.避免过度同步</h5>
+
+<p>为了避免死锁和数据破坏，千万不要从同步区域内部调用外来方法，并要尽量限制同步区域内部的工作量。</p>
+
+<h5>68.executor和task优先于线程</h5>
+
+<p>现在应当优先使用<code>executor</code>和<code>task</code>而不是<code>Thread</code>，因为在以前<code>Thread</code>既是工作单元又是执行单元，但是现在二者分离，<code>executor</code>是执行单元，<code>Runnable</code>和<code>Callable</code>是工作单元。</p>
+
+<p>使用<code>ScheduledThreadPool</code>代替<code>Timer</code>作为多线程的定时器。</p>
+
+<p>对于<code>ThreadPool</code>：</p>
+
+<ol>
+<li>使用<code>Executor.newCachedThreadPool</code>来应对一个轻负载的服务器。</li>
+<li>使用<code>Executor.newFixedThreadPool</code>来应对一个重负载的服务器。</li>
+<li>为了最大限度控制它，直接使用<code>ThreadPoolExecutor</code>。</li>
+</ol>
+
+<h5>69.并发工具优先于wait和notify</h5>
+
+<p>考虑使用<code>java.util.concurrent</code>而非<code>wait</code>和<code>notify</code>。如果你在维护使用<code>wait</code>和<code>notify</code>的代码，务必确保始终是利用标准的模式从<code>while</code>循环内部调用<code>wait</code>。一般情况下，你应该优先使用<code>notifyAll</code>，而不是使用<code>notify</code>。如果使用<code>notify</code>，请一定要小心，以确保程序的活性。</p>
+
+<h5>70.线程安全性的文档化</h5>
+
+<p>线程安全性的几种级别：</p>
+
+<ol>
+<li><p>不可变的<code>immutable</code>，这个类的实例是不变的，所以不需要外部的同步。例如：<code>String</code>、<code>Long</code>和<code>BigInteger</code>。</p></li>
+
+<li><p>无条件的线程安全<code>unconditionally thread-safe</code>,这个类的实例是可变的，但是这个类有着足够的内部同步，所以它的实例可以被并发使用，无需任何外部同步。例如：<code>Random</code>和<code>ConcurrentHashMap</code>。</p></li>
+
+<li><p>有条件的线程安全<code>conditionally thread-safe</code>，除了有些方法为进行安全的并发而使用需要外部同步之外，这种线程安全级别与无条件的线程安全相同。例如：<code>Collections.synchronized</code>包装返回的集合，它们的迭代器<code>iterator</code>要求外部同步。</p></li>
+
+<li><p>非线程安全<code>not thread-safe</code>，这个实例是可变的。为了并发地使用它们，客户必须利用自己选择的外部同步包围每个方法调用（或者调用序列）。例如：<code>ArrayList</code>和<code>HashMap</code>。</p></li>
+
+<li><p>线程对立的<code>thread-hostie</code>，这个类不能安全地被多个线程并发使用，即使所有的方法调用都被外部同步包围。</p></li>
+</ol>
+
+<p>如果编写无条件的线程安全类，建议使用私有锁，隐藏内部实现，私有锁尤其适合于专门为继承而设计的类。如果编写有条件的线程安全类，一定要在<code>API</code>文档中注明哪个方法调用序列需要外部同步，以及执行这些序列需要哪把锁。</p>
+
+<h5>71.慎用延迟初始化</h5>
+
+<p><strong>除非绝对必要，否则就不要这么做。</strong>如果域只在类的实例部分被访问，并且初始化这个域的开销很高，可能就值得进行延迟初始化。在大多数情况下，正常的初始化要优先于延迟初始化。</p>
+
+<p>四种延迟初始化的方式：</p>
+
+<p>1.最普通的：</p>
+
+<pre><code class="language-Java">private FieldType field;
+synchronized Field getField(){
+    if(field==null){
+        field=computeFieldValue();
+    }
+    return field;
+}
+</code></pre>
+
+<p>2.对静态域的出于性能考虑的初始化方式：</p>
+
+<pre><code class="language-Java">private static class FieldHolder{
+    static final FieldType field=computeFieldValue();
+}
+static FieldType getField(){ return FieldHolder.field; }
+</code></pre>
+
+<p>3.双重检查模式（出于性能考虑，避免初始化之后的锁定访问的开销）：</p>
+
+<pre><code class="language-Java">private volatile FieldType field;
+Field getField(){
+    FieldType result=field;
+    if(result==null){
+        synchronized(this){
+            result=field;
+            if(result==null){
+                field=result=computeFieldValue();
+            }
+        }
+    }
+    return result;
+}
+</code></pre>
+
+<p>4.单重检查模式（双重检查模式的变式，可以接受重复初始化）：</p>
+
+<pre><code class="language-Java">private volatile FieldType field; 
+private FieldType getField(){ 
+    FieldType result=field; 
+    if(result==null){ 
+        field=result=computeFieldValue(); 
+    } 
+    return result; 
+}
+</code></pre>
+
+<h5>72.不要依赖于线程调度器</h5>
+
+<p>线程只做有意义的工作，不应该忙等。</p>
+
+<p>不要依赖<code>Thread.yield</code>改变优先级，因为它在不同环境下效果不同，而且实现也不同。<strong>对于大多数程序员来说，<code>Thread.yield</code>的唯一用途是在测试期间人为地增加程序的并发性。</strong></p>
+
+<p>不要使用调整线程优先级的方法，它不具有可移植性。</p>
+
+<p>线程优先级可以提高一个已经能够正常工作的程序的服务质量，但永远不应该用来“修正”一个本来不能工作的程序。</p>
+
+<p><strong>要编写健壮的、相应良好的、可移植的多线程应用程序，最好的办法是确保可运行线程的平均数量不明显多于处理器的数量，这使得线程调度器没有更多的选择：它只需要运行这些可运行的线程，直到它们不再可运行。在等待的线程并不是可运行的。</strong></p>
+
+<h5>73.避免使用线程组</h5>
+
+<p><code>ThreadGroup API</code>已经过时。</p>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="https://gaogggg.github.io/" style="background-image: url(https://gaogggg.github.io/images/logo.png)"><span class="hidden">Gaoge's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="https://gaogggg.github.io/">Gaoge</a></h4>
+  
+  <p>A student.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Beijing, China</span>
+    <span class="author-link icon-link"><a href="ggao93.cn">ggao93.cn</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=Effective%20Java%20ReadingNotes%209&nbsp;-&nbsp;Gaoge%27s%20island&amp;url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes9%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes9%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes9%2f&amp;description=Effective%20Java%20ReadingNotes%209"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes9%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+<div class="ds-thread" data-thread-key="" data-title="" data-url="/post/readingnotes/effective-java-readingnotes9/"></div>
+
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gaoge"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+
+  </footer>
+</article>
+
+</main>
+﻿    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">20世纪少年</a> All rights reserved - 2016</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/index.js"></script>
+    
+</body>
+</html>
+

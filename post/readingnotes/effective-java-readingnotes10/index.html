@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    
+        <meta name="twitter:card" content="summary"/>
+    
+
+
+
+<meta name="twitter:title" content="Effective Java ReadingNotes 10"/>
+<meta name="twitter:description" content="Effective Java阅读笔记(10)
+Effective Java第11章 序列化
+74.谨慎地实现Serializable接口 实现Serializable接口的代价：
+ 一旦一个类被发布，就大大降低了“改变这个类的实现”的灵活性。因为这个类的字节流编码成为了它导出的API的一部分，如果采用默认的序列化形式，甚至私有以及包级私有的成员都会被导出。这会迫使程序员维护这种序列形式。同时，这也违反了第13条的“最低限度访问域”的建议。如果接受了默认的序列化形式，并且以后又要改变这个类的内部表示方法，则可能会导致序列化形式的不兼容，虽然在改变内部表示法的同时仍然维持着原来的序列化形式（使用ObjectoutputStream.putFields和ObjectInputStream.readFields）是可能的，但是过程复杂。序列化还会使类的演变收到限制，比如说受到序列版本UID(serial version UID)的限制。如果不显式指定一个UID，系统会自动生成它，生成的UID受到类的名称、实现的接口的名称、以及所有公有的和受保护的成员的名称的影响。如果后期向这个类中增加或者删减了任何东西，都有可能导致这个自动生成的UID的变化，从而影响到这个类序列化/反序列化是否成功。
+ 增加了出现Bug和安全漏洞的可能性。反序列化就像是一个隐藏的构造器一样，这个过程中同样需要有像构造器一样建立起该类的各种条件约束，但这在反序列化中容易忘记。
+ 随着类的版本更新，对实现了Serializable接口的类的测试负担会加重。每一次版本变化都要测试当前版本的类到以前版本的类的序列化/反序列化是否可以兼容。除了二进制兼容，还要语义兼容。
+  什么时候实现Serializable接口：
+ 一般来说值类应该实现，而代表活动实体的类不应该实现。
+ 为了继承而设计的类应该尽可能少地实现，但是这个类的子类也许需要实现Serializable接口。这种情况下需要这个专门为继承而设计的类提供一个无参的构造器。提供无参构造器一般来说是容易的，但是如果这个为了继承而设计的类是有状态的（也就是说不可能无参数），这时提供无参构造器比较复杂。推荐的做法是在无参构造器之外再提供额外的初始化方法和状态检测方法，调用其他方法前要有初始化，每次进入其他方法还要进行状态检测。
+ 内部类不应该实现序列化，因为它的默认序列化定义不清楚，而静态成员类是可以实现Serializable接口序列化的。
+  75.考虑使用自定义的序列化形式 如果一个对象的物理表示法等同于它的逻辑内容，可能就适合于使用默认的序列化形式。
+当一个对象的物理表示法与它的逻辑数据内容有实质性区别的时候，使用默认的序列化形式存在以下缺点：
+ 它使这个类的导出API永远束缚在该类的内部表示法上。
+ 它会消耗过多空间。
+ 它会消耗过多时间。
+ 它会引起栈溢出（在一个对象的物理表示法使用链表，需要对链表进行遍历的时候）。
+  建议：
+ 使用transient关键字标记要从默认序列化形式中省略的成员，然后在writeObject中对它们进行自定义操作，同时编写readObject方法。
+ 对于实现了自定义序列化形式的类，使用JavaDoc进行注释，尽管readObject/writeObject方法是私有的也是如此。这里需要使用标签@serial和@serialData。
+ 自定义序列版本UID(serial version UID)，这样会避免它成为不兼容的原因，同时还会提高性能。
+ 如果自定义序列化形式的类的其他有关状态更改的方法使用了同步，那么在对象序列化上也要同步。
+  76.保护性地编写readObject方法 对于序列化形成的字节流，并不都是安全的，里面可能有伪造的有害数据，对它们不加分辨地反序列化，可能会导致程序收到损害。伪造的有害数据一方面可以是不正确的字节流 ；另一方面还可能是在正确的字节流中夹带“私货”，通过“私货”可以恶意修改反序列化的对象。
+本条建议：
+ 在readObject反序列化之后，检查对象成员的有效性。
+ 进行保护性拷贝，这里的注意点和第39条一样：保护性拷贝先于参数有效性检测和避免使用clone方法（但是保护性拷贝会导致这个类需要保护性拷贝的成员不能为final）。
+ 尽管Java1.4中为了阻止恶意攻击并且节省保护性拷贝的开销，在ObjectOutputStream/ObjectInputStream中引入了writeObjectUnshared/readObjectUnshared方法，并且比保护性拷贝更快，但是这些方法可能会受到复杂的攻击，不建议使用。
+ readObject方法和构造器行为类似，所以对构造器的注意事项同样适用于readObject方法：不要调用可被覆盖的方法。
+  编写readObject方法的建议：
+ 对于对象引用域必须保持为私有的类，要保护性地拷贝这些域中的每一个对象。不可变类的可变组件就属于这一类。
+ 对于任何约束条件，如果检查失败，则抛出InvalidObjectException异常。这些检查动作应该跟在所有的保护性拷贝之后。"/>
+
+
+
+  	<meta property="og:title" content=" Effective Java ReadingNotes 10 &middot;  Gaoge&#39;s island" />
+  	<meta property="og:site_name" content="Gaoge&#39;s island" />
+  	<meta property="og:url" content="ggao93.cn" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-12-28T16:18:24&#43;08:00" />
+
+    
+    <meta property="og:article:tag" content="java" />
+    
+    <meta property="og:article:tag" content="readingnotes" />
+    
+    
+
+    <title>
+       Effective Java ReadingNotes 10 &middot;  Gaoge's island
+    </title>
+
+    <meta name="description" content="LOVE &amp; PEACE &amp; SMILE &amp; JOY" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://gaogggg.github.io/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://gaogggg.github.io/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="https://gaogggg.github.io/css/font.css" />
+
+    
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/highlight.css">
+    <link rel="stylesheet" href="https://gaogggg.github.io/css/github-gist.css">
+    <script src="https://gaogggg.github.io/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+    
+      
+          <link href="https://gaogggg.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Gaoge&#39;s island" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes10/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Home</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/android">Android</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/readingnotes">ReadingNotes</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/leetcode">LeetCode</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/tags/java">Java</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="mailto:gg1993@pku.edu.cn">send email to me</a>
+            </li>
+        
+    </ul>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="blog-logo" href="https://gaogggg.github.io/"><img src="https://gaogggg.github.io/images/logo.png" alt="Home" /></a>
+  
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">Effective Java ReadingNotes 10</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-12-28T16:18:24&#43;08:00">
+            Dec 28, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/java/">#java</a></span>
+         
+          <span class="post-tag small"><a href="https://gaogggg.github.io/tags/readingnotes/">#readingnotes</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <p>Effective Java阅读笔记(10)</p>
+
+<p>Effective Java第11章 序列化</p>
+
+<h5>74.谨慎地实现Serializable接口</h5>
+
+<p>实现<code>Serializable</code>接口的代价：</p>
+
+<ol>
+<li><p>一旦一个类被发布，就大大降低了“改变这个类的实现”的灵活性。因为这个类的字节流编码成为了它导出的API的一部分，如果采用默认的序列化形式，甚至私有以及包级私有的成员都会被导出。这会迫使程序员维护这种序列形式。同时，这也违反了第<code>13</code>条的“最低限度访问域”的建议。如果接受了默认的序列化形式，并且以后又要改变这个类的内部表示方法，则可能会导致序列化形式的不兼容，虽然在改变内部表示法的同时仍然维持着原来的序列化形式（使用<code>ObjectoutputStream.putFields</code>和<code>ObjectInputStream.readFields</code>）是可能的，但是过程复杂。序列化还会使类的演变收到限制，比如说受到序列版本<code>UID(serial version UID)</code>的限制。如果不显式指定一个UID，系统会自动生成它，生成的UID受到类的名称、实现的接口的名称、以及所有公有的和受保护的成员的名称的影响。如果后期向这个类中增加或者删减了任何东西，都有可能导致这个自动生成的UID的变化，从而影响到这个类序列化/反序列化是否成功。</p></li>
+
+<li><p>增加了出现Bug和安全漏洞的可能性。反序列化就像是一个隐藏的构造器一样，这个过程中同样需要有像构造器一样建立起该类的各种条件约束，但这在反序列化中容易忘记。</p></li>
+
+<li><p>随着类的版本更新，对实现了Serializable接口的类的测试负担会加重。每一次版本变化都要测试当前版本的类到以前版本的类的序列化/反序列化是否可以兼容。除了二进制兼容，还要语义兼容。</p></li>
+</ol>
+
+<p>什么时候实现<code>Serializable</code>接口：</p>
+
+<ol>
+<li><p>一般来说值类应该实现，而代表活动实体的类不应该实现。</p></li>
+
+<li><p>为了继承而设计的类应该尽可能少地实现，但是这个类的子类也许需要实现<code>Serializable</code>接口。这种情况下需要这个专门为继承而设计的类提供一个无参的构造器。提供无参构造器一般来说是容易的，但是如果这个为了继承而设计的类是有状态的（也就是说不可能无参数），这时提供无参构造器比较复杂。推荐的做法是在无参构造器之外再提供额外的初始化方法和状态检测方法，调用其他方法前要有初始化，每次进入其他方法还要进行状态检测。</p></li>
+
+<li><p>内部类不应该实现序列化，因为它的默认序列化定义不清楚，而静态成员类是可以实现<code>Serializable</code>接口序列化的。</p></li>
+</ol>
+
+<h5>75.考虑使用自定义的序列化形式</h5>
+
+<p>如果一个对象的物理表示法等同于它的逻辑内容，可能就适合于使用默认的序列化形式。</p>
+
+<p>当一个对象的物理表示法与它的逻辑数据内容有实质性区别的时候，使用默认的序列化形式存在以下缺点：</p>
+
+<ol>
+<li><p>它使这个类的导出<code>API</code>永远束缚在该类的内部表示法上。</p></li>
+
+<li><p>它会消耗过多空间。</p></li>
+
+<li><p>它会消耗过多时间。</p></li>
+
+<li><p>它会引起栈溢出（在一个对象的物理表示法使用链表，需要对链表进行遍历的时候）。</p></li>
+</ol>
+
+<p>建议：</p>
+
+<ol>
+<li><p>使用<code>transient</code>关键字标记要从默认序列化形式中省略的成员，然后在<code>writeObject</code>中对它们进行自定义操作，同时编写readObject方法。</p></li>
+
+<li><p>对于实现了自定义序列化形式的类，使用<code>JavaDoc</code>进行注释，尽管<code>readObject/writeObject</code>方法是私有的也是如此。这里需要使用标签<code>@serial</code>和<code>@serialData</code>。</p></li>
+
+<li><p>自定义序列版本<code>UID(serial version UID)</code>，这样会避免它成为不兼容的原因，同时还会提高性能。</p></li>
+
+<li><p>如果自定义序列化形式的类的其他有关状态更改的方法使用了同步，那么在对象序列化上也要同步。</p></li>
+</ol>
+
+<h5>76.保护性地编写readObject方法</h5>
+
+<p>对于序列化形成的字节流，并不都是安全的，里面可能有伪造的有害数据，对它们不加分辨地反序列化，可能会导致程序收到损害。伪造的有害数据一方面可以是不正确的字节流 ；另一方面还可能是在正确的字节流中夹带“私货”，通过“私货”可以恶意修改反序列化的对象。</p>
+
+<p>本条建议：</p>
+
+<ol>
+<li><p>在<code>readObject</code>反序列化之后，检查对象成员的有效性。</p></li>
+
+<li><p>进行保护性拷贝，这里的注意点和第<code>39</code>条一样：保护性拷贝先于参数有效性检测和避免使用<code>clone</code>方法（但是保护性拷贝会导致这个类需要保护性拷贝的成员不能为<code>final</code>）。</p></li>
+
+<li><p>尽管<code>Java1.4</code>中为了阻止恶意攻击并且节省保护性拷贝的开销，在<code>ObjectOutputStream/ObjectInputStream</code>中引入了<code>writeObjectUnshared/readObjectUnshared</code>方法，并且比保护性拷贝更快，但是这些方法可能会受到复杂的攻击，不建议使用。</p></li>
+
+<li><p><code>readObject</code>方法和构造器行为类似，所以对构造器的注意事项同样适用于<code>readObject</code>方法：不要调用可被覆盖的方法。</p></li>
+</ol>
+
+<p>编写<code>readObject</code>方法的建议：</p>
+
+<ol>
+<li><p>对于对象引用域必须保持为私有的类，要保护性地拷贝这些域中的每一个对象。不可变类的可变组件就属于这一类。</p></li>
+
+<li><p>对于任何约束条件，如果检查失败，则抛出<code>InvalidObjectException</code>异常。这些检查动作应该跟在所有的保护性拷贝之后。</p></li>
+
+<li><p>如果整个对象图在被反序列化之后必须进行检验，就应该使用<code>ObjectInputValidation</code>接口。</p></li>
+
+<li><p>无论是直接方式还是间接方式，都不要调用类中任何可能被覆盖的方法。</p></li>
+</ol>
+
+<h5>77.对于实例控制，枚举类型优先于readResolve</h5>
+
+<p><code>readObject</code>方法实现的难点：</p>
+
+<ol>
+<li><p><code>readResolve</code>的调用是在<code>readObject</code>之后，<code>readResolve</code>方法会返回一个对象，取代<code>readObject</code>反序列化的对象。也就是说存在一种可能，在<code>readResolve</code>调用之前，<code>readObject</code>调用之后，有人恶意地得到反序列化的新的对象，取得它的引用，进而破坏单例。因此需要单例的类的所有实例域都是<code>transient</code>的。</p></li>
+
+<li><p>对于<code>readObject</code>，它的可访问性值得考虑，私有意味着这个类失去了被子类化的能力；如果它是受保护或者公有的，而这个类的子类没有覆盖<code>readObject</code>方法，反序列化会产生一个这个类（超类）的实例，可能导致<code>ClassCastException</code>异常。</p></li>
+</ol>
+
+<p>建议使用枚举实现单例（实例控制）。但是，如果一个单例的实例在编译时还不能确定（未实例化），那么是无法使用枚举类型的。</p>
+
+<h5>78.考虑用序列化代理代替序列化实例</h5>
+
+<p>序列化代理：</p>
+
+<ol>
+<li><p>在需要序列化的类的内部创建一个私有的静态内部类，这个静态内部类同样实现<code>Serializable</code>接口。静态内部类通过构造函数传入外围类的引用，保留外围类的逻辑状态（比如保留所有数据、约束条件），并且有<code>readObject</code>方法。</p></li>
+
+<li><p>同样实现了<code>Serializable</code>接口的外部类需要编写方法<code>writeReplace</code>，返回一个<code>new</code>出来的静态内部类（传入了自己的引用）。<code>writeReplace</code>会在序列化的时候对写入的对象进行替换，替换为这个静态内部类。</p></li>
+
+<li><p>当反序列化的时候，不是调用外围类，而是调用静态内部类的反序列化的方法<code>readResolve</code>，返回一个使用当初保留的外部类的全部信息构造的外部类。</p></li>
+</ol>
+
+<p>使用序列化代理的好处：</p>
+
+<ol>
+<li><p>可以像保护性拷贝方法一样阻止伪字节流的攻击以及内部域的盗用攻击。</p></li>
+
+<li><p>允许域为<code>final</code>。</p></li>
+
+<li><p>允许反序列化实例有着与原始序列化实例不同的类。</p></li>
+</ol>
+
+<p>使用序列化代理的局限性：</p>
+
+<ol>
+<li><p>不能与可被客户扩展的类兼容。</p></li>
+
+<li><p>不能与对象图中包含循环的某些类兼容：因为不能从对象的序列化代理的<code>readResolve</code>方法中调用这个对象的方法，因为这个对象还不存在。</p></li>
+
+<li><p>可能增加性能开销。</p></li>
+</ol>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="https://gaogggg.github.io/" style="background-image: url(https://gaogggg.github.io/images/logo.png)"><span class="hidden">Gaoge's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="https://gaogggg.github.io/">Gaoge</a></h4>
+  
+  <p>A student.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Beijing, China</span>
+    <span class="author-link icon-link"><a href="ggao93.cn">ggao93.cn</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=Effective%20Java%20ReadingNotes%2010&nbsp;-&nbsp;Gaoge%27s%20island&amp;url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes10%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes10%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes10%2f&amp;description=Effective%20Java%20ReadingNotes%2010"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=https%3a%2f%2fgaogggg.github.io%2fpost%2freadingnotes%2feffective-java-readingnotes10%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+<div class="ds-thread" data-thread-key="" data-title="" data-url="/post/readingnotes/effective-java-readingnotes10/"></div>
+
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gaoge"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+
+  </footer>
+</article>
+
+</main>
+﻿    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">20世纪少年</a> All rights reserved - 2016</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="https://gaogggg.github.io/js/index.js"></script>
+    
+</body>
+</html>
+

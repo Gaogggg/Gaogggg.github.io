@@ -7,8 +7,268 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>All rights reserved - 2016</copyright>
-    <lastBuildDate>Tue, 27 Dec 2016 23:18:24 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 28 Dec 2016 16:18:24 +0800</lastBuildDate>
     <atom:link href="https://gaogggg.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Effective Java ReadingNotes 10</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes10/</link>
+      <pubDate>Wed, 28 Dec 2016 16:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes10/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(10)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第11章 序列化&lt;/p&gt;
+
+&lt;h5&gt;74.谨慎地实现Serializable接口&lt;/h5&gt;
+
+&lt;p&gt;实现&lt;code&gt;Serializable&lt;/code&gt;接口的代价：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;一旦一个类被发布，就大大降低了“改变这个类的实现”的灵活性。因为这个类的字节流编码成为了它导出的API的一部分，如果采用默认的序列化形式，甚至私有以及包级私有的成员都会被导出。这会迫使程序员维护这种序列形式。同时，这也违反了第&lt;code&gt;13&lt;/code&gt;条的“最低限度访问域”的建议。如果接受了默认的序列化形式，并且以后又要改变这个类的内部表示方法，则可能会导致序列化形式的不兼容，虽然在改变内部表示法的同时仍然维持着原来的序列化形式（使用&lt;code&gt;ObjectoutputStream.putFields&lt;/code&gt;和&lt;code&gt;ObjectInputStream.readFields&lt;/code&gt;）是可能的，但是过程复杂。序列化还会使类的演变收到限制，比如说受到序列版本&lt;code&gt;UID(serial version UID)&lt;/code&gt;的限制。如果不显式指定一个UID，系统会自动生成它，生成的UID受到类的名称、实现的接口的名称、以及所有公有的和受保护的成员的名称的影响。如果后期向这个类中增加或者删减了任何东西，都有可能导致这个自动生成的UID的变化，从而影响到这个类序列化/反序列化是否成功。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;增加了出现Bug和安全漏洞的可能性。反序列化就像是一个隐藏的构造器一样，这个过程中同样需要有像构造器一样建立起该类的各种条件约束，但这在反序列化中容易忘记。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;随着类的版本更新，对实现了Serializable接口的类的测试负担会加重。每一次版本变化都要测试当前版本的类到以前版本的类的序列化/反序列化是否可以兼容。除了二进制兼容，还要语义兼容。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;什么时候实现&lt;code&gt;Serializable&lt;/code&gt;接口：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;一般来说值类应该实现，而代表活动实体的类不应该实现。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;为了继承而设计的类应该尽可能少地实现，但是这个类的子类也许需要实现&lt;code&gt;Serializable&lt;/code&gt;接口。这种情况下需要这个专门为继承而设计的类提供一个无参的构造器。提供无参构造器一般来说是容易的，但是如果这个为了继承而设计的类是有状态的（也就是说不可能无参数），这时提供无参构造器比较复杂。推荐的做法是在无参构造器之外再提供额外的初始化方法和状态检测方法，调用其他方法前要有初始化，每次进入其他方法还要进行状态检测。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;内部类不应该实现序列化，因为它的默认序列化定义不清楚，而静态成员类是可以实现&lt;code&gt;Serializable&lt;/code&gt;接口序列化的。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;75.考虑使用自定义的序列化形式&lt;/h5&gt;
+
+&lt;p&gt;如果一个对象的物理表示法等同于它的逻辑内容，可能就适合于使用默认的序列化形式。&lt;/p&gt;
+
+&lt;p&gt;当一个对象的物理表示法与它的逻辑数据内容有实质性区别的时候，使用默认的序列化形式存在以下缺点：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;它使这个类的导出&lt;code&gt;API&lt;/code&gt;永远束缚在该类的内部表示法上。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;它会消耗过多空间。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;它会消耗过多时间。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;它会引起栈溢出（在一个对象的物理表示法使用链表，需要对链表进行遍历的时候）。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;建议：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;使用&lt;code&gt;transient&lt;/code&gt;关键字标记要从默认序列化形式中省略的成员，然后在&lt;code&gt;writeObject&lt;/code&gt;中对它们进行自定义操作，同时编写readObject方法。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;对于实现了自定义序列化形式的类，使用&lt;code&gt;JavaDoc&lt;/code&gt;进行注释，尽管&lt;code&gt;readObject/writeObject&lt;/code&gt;方法是私有的也是如此。这里需要使用标签&lt;code&gt;@serial&lt;/code&gt;和&lt;code&gt;@serialData&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;自定义序列版本&lt;code&gt;UID(serial version UID)&lt;/code&gt;，这样会避免它成为不兼容的原因，同时还会提高性能。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;如果自定义序列化形式的类的其他有关状态更改的方法使用了同步，那么在对象序列化上也要同步。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;76.保护性地编写readObject方法&lt;/h5&gt;
+
+&lt;p&gt;对于序列化形成的字节流，并不都是安全的，里面可能有伪造的有害数据，对它们不加分辨地反序列化，可能会导致程序收到损害。伪造的有害数据一方面可以是不正确的字节流 ；另一方面还可能是在正确的字节流中夹带“私货”，通过“私货”可以恶意修改反序列化的对象。&lt;/p&gt;
+
+&lt;p&gt;本条建议：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;在&lt;code&gt;readObject&lt;/code&gt;反序列化之后，检查对象成员的有效性。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;进行保护性拷贝，这里的注意点和第&lt;code&gt;39&lt;/code&gt;条一样：保护性拷贝先于参数有效性检测和避免使用&lt;code&gt;clone&lt;/code&gt;方法（但是保护性拷贝会导致这个类需要保护性拷贝的成员不能为&lt;code&gt;final&lt;/code&gt;）。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;尽管&lt;code&gt;Java1.4&lt;/code&gt;中为了阻止恶意攻击并且节省保护性拷贝的开销，在&lt;code&gt;ObjectOutputStream/ObjectInputStream&lt;/code&gt;中引入了&lt;code&gt;writeObjectUnshared/readObjectUnshared&lt;/code&gt;方法，并且比保护性拷贝更快，但是这些方法可能会受到复杂的攻击，不建议使用。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;readObject&lt;/code&gt;方法和构造器行为类似，所以对构造器的注意事项同样适用于&lt;code&gt;readObject&lt;/code&gt;方法：不要调用可被覆盖的方法。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;编写&lt;code&gt;readObject&lt;/code&gt;方法的建议：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;对于对象引用域必须保持为私有的类，要保护性地拷贝这些域中的每一个对象。不可变类的可变组件就属于这一类。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;对于任何约束条件，如果检查失败，则抛出&lt;code&gt;InvalidObjectException&lt;/code&gt;异常。这些检查动作应该跟在所有的保护性拷贝之后。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;如果整个对象图在被反序列化之后必须进行检验，就应该使用&lt;code&gt;ObjectInputValidation&lt;/code&gt;接口。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;无论是直接方式还是间接方式，都不要调用类中任何可能被覆盖的方法。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;77.对于实例控制，枚举类型优先于readResolve&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;readObject&lt;/code&gt;方法实现的难点：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;readResolve&lt;/code&gt;的调用是在&lt;code&gt;readObject&lt;/code&gt;之后，&lt;code&gt;readResolve&lt;/code&gt;方法会返回一个对象，取代&lt;code&gt;readObject&lt;/code&gt;反序列化的对象。也就是说存在一种可能，在&lt;code&gt;readResolve&lt;/code&gt;调用之前，&lt;code&gt;readObject&lt;/code&gt;调用之后，有人恶意地得到反序列化的新的对象，取得它的引用，进而破坏单例。因此需要单例的类的所有实例域都是&lt;code&gt;transient&lt;/code&gt;的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;对于&lt;code&gt;readObject&lt;/code&gt;，它的可访问性值得考虑，私有意味着这个类失去了被子类化的能力；如果它是受保护或者公有的，而这个类的子类没有覆盖&lt;code&gt;readObject&lt;/code&gt;方法，反序列化会产生一个这个类（超类）的实例，可能导致&lt;code&gt;ClassCastException&lt;/code&gt;异常。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;建议使用枚举实现单例（实例控制）。但是，如果一个单例的实例在编译时还不能确定（未实例化），那么是无法使用枚举类型的。&lt;/p&gt;
+
+&lt;h5&gt;78.考虑用序列化代理代替序列化实例&lt;/h5&gt;
+
+&lt;p&gt;序列化代理：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;在需要序列化的类的内部创建一个私有的静态内部类，这个静态内部类同样实现&lt;code&gt;Serializable&lt;/code&gt;接口。静态内部类通过构造函数传入外围类的引用，保留外围类的逻辑状态（比如保留所有数据、约束条件），并且有&lt;code&gt;readObject&lt;/code&gt;方法。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;同样实现了&lt;code&gt;Serializable&lt;/code&gt;接口的外部类需要编写方法&lt;code&gt;writeReplace&lt;/code&gt;，返回一个&lt;code&gt;new&lt;/code&gt;出来的静态内部类（传入了自己的引用）。&lt;code&gt;writeReplace&lt;/code&gt;会在序列化的时候对写入的对象进行替换，替换为这个静态内部类。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;当反序列化的时候，不是调用外围类，而是调用静态内部类的反序列化的方法&lt;code&gt;readResolve&lt;/code&gt;，返回一个使用当初保留的外部类的全部信息构造的外部类。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;使用序列化代理的好处：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;可以像保护性拷贝方法一样阻止伪字节流的攻击以及内部域的盗用攻击。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;允许域为&lt;code&gt;final&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;允许反序列化实例有着与原始序列化实例不同的类。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;使用序列化代理的局限性：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;不能与可被客户扩展的类兼容。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不能与对象图中包含循环的某些类兼容：因为不能从对象的序列化代理的&lt;code&gt;readResolve&lt;/code&gt;方法中调用这个对象的方法，因为这个对象还不存在。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;可能增加性能开销。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Effective Java ReadingNotes 9</title>
+      <link>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes9/</link>
+      <pubDate>Wed, 28 Dec 2016 10:18:24 +0800</pubDate>
+      
+      <guid>https://gaogggg.github.io/post/readingnotes/effective-java-readingnotes9/</guid>
+      <description>&lt;p&gt;Effective Java阅读笔记(9)&lt;/p&gt;
+
+&lt;p&gt;Effective Java第10章 并发&lt;/p&gt;
+
+&lt;h5&gt;66.同步访问共享的可变数据&lt;/h5&gt;
+
+&lt;p&gt;当多个线程共享可变数据的时候，每个读或者写数据的线程都必须执行同步。&lt;/p&gt;
+
+&lt;h5&gt;67.避免过度同步&lt;/h5&gt;
+
+&lt;p&gt;为了避免死锁和数据破坏，千万不要从同步区域内部调用外来方法，并要尽量限制同步区域内部的工作量。&lt;/p&gt;
+
+&lt;h5&gt;68.executor和task优先于线程&lt;/h5&gt;
+
+&lt;p&gt;现在应当优先使用&lt;code&gt;executor&lt;/code&gt;和&lt;code&gt;task&lt;/code&gt;而不是&lt;code&gt;Thread&lt;/code&gt;，因为在以前&lt;code&gt;Thread&lt;/code&gt;既是工作单元又是执行单元，但是现在二者分离，&lt;code&gt;executor&lt;/code&gt;是执行单元，&lt;code&gt;Runnable&lt;/code&gt;和&lt;code&gt;Callable&lt;/code&gt;是工作单元。&lt;/p&gt;
+
+&lt;p&gt;使用&lt;code&gt;ScheduledThreadPool&lt;/code&gt;代替&lt;code&gt;Timer&lt;/code&gt;作为多线程的定时器。&lt;/p&gt;
+
+&lt;p&gt;对于&lt;code&gt;ThreadPool&lt;/code&gt;：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;使用&lt;code&gt;Executor.newCachedThreadPool&lt;/code&gt;来应对一个轻负载的服务器。&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;Executor.newFixedThreadPool&lt;/code&gt;来应对一个重负载的服务器。&lt;/li&gt;
+&lt;li&gt;为了最大限度控制它，直接使用&lt;code&gt;ThreadPoolExecutor&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5&gt;69.并发工具优先于wait和notify&lt;/h5&gt;
+
+&lt;p&gt;考虑使用&lt;code&gt;java.util.concurrent&lt;/code&gt;而非&lt;code&gt;wait&lt;/code&gt;和&lt;code&gt;notify&lt;/code&gt;。如果你在维护使用&lt;code&gt;wait&lt;/code&gt;和&lt;code&gt;notify&lt;/code&gt;的代码，务必确保始终是利用标准的模式从&lt;code&gt;while&lt;/code&gt;循环内部调用&lt;code&gt;wait&lt;/code&gt;。一般情况下，你应该优先使用&lt;code&gt;notifyAll&lt;/code&gt;，而不是使用&lt;code&gt;notify&lt;/code&gt;。如果使用&lt;code&gt;notify&lt;/code&gt;，请一定要小心，以确保程序的活性。&lt;/p&gt;
+
+&lt;h5&gt;70.线程安全性的文档化&lt;/h5&gt;
+
+&lt;p&gt;线程安全性的几种级别：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;不可变的&lt;code&gt;immutable&lt;/code&gt;，这个类的实例是不变的，所以不需要外部的同步。例如：&lt;code&gt;String&lt;/code&gt;、&lt;code&gt;Long&lt;/code&gt;和&lt;code&gt;BigInteger&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;无条件的线程安全&lt;code&gt;unconditionally thread-safe&lt;/code&gt;,这个类的实例是可变的，但是这个类有着足够的内部同步，所以它的实例可以被并发使用，无需任何外部同步。例如：&lt;code&gt;Random&lt;/code&gt;和&lt;code&gt;ConcurrentHashMap&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;有条件的线程安全&lt;code&gt;conditionally thread-safe&lt;/code&gt;，除了有些方法为进行安全的并发而使用需要外部同步之外，这种线程安全级别与无条件的线程安全相同。例如：&lt;code&gt;Collections.synchronized&lt;/code&gt;包装返回的集合，它们的迭代器&lt;code&gt;iterator&lt;/code&gt;要求外部同步。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;非线程安全&lt;code&gt;not thread-safe&lt;/code&gt;，这个实例是可变的。为了并发地使用它们，客户必须利用自己选择的外部同步包围每个方法调用（或者调用序列）。例如：&lt;code&gt;ArrayList&lt;/code&gt;和&lt;code&gt;HashMap&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;线程对立的&lt;code&gt;thread-hostie&lt;/code&gt;，这个类不能安全地被多个线程并发使用，即使所有的方法调用都被外部同步包围。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;如果编写无条件的线程安全类，建议使用私有锁，隐藏内部实现，私有锁尤其适合于专门为继承而设计的类。如果编写有条件的线程安全类，一定要在&lt;code&gt;API&lt;/code&gt;文档中注明哪个方法调用序列需要外部同步，以及执行这些序列需要哪把锁。&lt;/p&gt;
+
+&lt;h5&gt;71.慎用延迟初始化&lt;/h5&gt;
+
+&lt;p&gt;&lt;strong&gt;除非绝对必要，否则就不要这么做。&lt;/strong&gt;如果域只在类的实例部分被访问，并且初始化这个域的开销很高，可能就值得进行延迟初始化。在大多数情况下，正常的初始化要优先于延迟初始化。&lt;/p&gt;
+
+&lt;p&gt;四种延迟初始化的方式：&lt;/p&gt;
+
+&lt;p&gt;1.最普通的：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;private FieldType field;
+synchronized Field getField(){
+    if(field==null){
+        field=computeFieldValue();
+    }
+    return field;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;2.对静态域的出于性能考虑的初始化方式：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;private static class FieldHolder{
+    static final FieldType field=computeFieldValue();
+}
+static FieldType getField(){ return FieldHolder.field; }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;3.双重检查模式（出于性能考虑，避免初始化之后的锁定访问的开销）：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;private volatile FieldType field;
+Field getField(){
+    FieldType result=field;
+    if(result==null){
+        synchronized(this){
+            result=field;
+            if(result==null){
+                field=result=computeFieldValue();
+            }
+        }
+    }
+    return result;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;4.单重检查模式（双重检查模式的变式，可以接受重复初始化）：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;private volatile FieldType field; 
+private FieldType getField(){ 
+    FieldType result=field; 
+    if(result==null){ 
+        field=result=computeFieldValue(); 
+    } 
+    return result; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;72.不要依赖于线程调度器&lt;/h5&gt;
+
+&lt;p&gt;线程只做有意义的工作，不应该忙等。&lt;/p&gt;
+
+&lt;p&gt;不要依赖&lt;code&gt;Thread.yield&lt;/code&gt;改变优先级，因为它在不同环境下效果不同，而且实现也不同。&lt;strong&gt;对于大多数程序员来说，&lt;code&gt;Thread.yield&lt;/code&gt;的唯一用途是在测试期间人为地增加程序的并发性。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;不要使用调整线程优先级的方法，它不具有可移植性。&lt;/p&gt;
+
+&lt;p&gt;线程优先级可以提高一个已经能够正常工作的程序的服务质量，但永远不应该用来“修正”一个本来不能工作的程序。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;要编写健壮的、相应良好的、可移植的多线程应用程序，最好的办法是确保可运行线程的平均数量不明显多于处理器的数量，这使得线程调度器没有更多的选择：它只需要运行这些可运行的线程，直到它们不再可运行。在等待的线程并不是可运行的。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h5&gt;73.避免使用线程组&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;ThreadGroup API&lt;/code&gt;已经过时。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Effective Java ReadingNotes 8</title>
