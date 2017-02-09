@@ -15,7 +15,7 @@
 
 
 <meta name="twitter:title" content="LeetCode 1 - 10"/>
-<meta name="twitter:description" content="1. Two Sum public class Solution { public int[] twoSum(int[] nums, int target) { int result[] = new int[2]; Mapmap = new HashMap(); for(int i = 0; i  2. Add Two Numbers /** * Definition for singly-linked list. * public class ListNode { * int val; * ListNode next; * ListNode(int x) { val = x; } * } */ public class Solution { public ListNode addTwoNumbers(ListNode l1, ListNode l2) { ListNode result = new ListNode(0); ListNode temp = result; int sum = 0; while(l1 !"/>
+<meta name="twitter:description" content="1. Two Sum public class Solution { public int[] twoSum(int[] nums, int target) { int result[] = new int[2]; Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;(); for(int i = 0; i &lt; nums.length; i&#43;&#43;){ if(map.containsKey(target - nums[i])){ result[1] = i; result[0] = map.get(target - nums[i]); return result; } map.put(nums[i], i); } return result; } }  2. Add Two Numbers /** * Definition for singly-linked list. * public class ListNode { * int val; * ListNode next; * ListNode(int x) { val = x; } * } */ public class Solution { public ListNode addTwoNumbers(ListNode l1, ListNode l2) { ListNode result = new ListNode(0); ListNode temp = result; int sum = 0; while(l1 !"/>
 
 
 
@@ -167,11 +167,11 @@
     <section class="post-content">
       <h5>1. Two Sum</h5>
 
-<pre><code class="language-java">public class Solution {
+<pre><code class="language-Java">public class Solution {
     public int[] twoSum(int[] nums, int target) {
         int result[] = new int[2];
-        Map<Integer, Integer> map = new HashMap<>();
-        for(int i = 0; i < nums.length; i++){
+        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; nums.length; i++){
             if(map.containsKey(target - nums[i])){
                 result[1] = i;
                 result[0] = map.get(target - nums[i]);
@@ -181,11 +181,12 @@
         }
         return result;
     }
-}</code></pre>
+}
+</code></pre>
 
 <h5>2. Add Two Numbers</h5>
 
-<pre><code class="language-java">/**
+<pre><code class="language-Java">/**
  * Definition for singly-linked list.
  * public class ListNode {
  *     int val;
@@ -211,21 +212,22 @@ public class Solution {
             temp.next = new ListNode(sum%10);
             temp = temp.next;
         }
-        if(sum/10 >= 1){
+        if(sum/10 &gt;= 1){
             temp.next = new ListNode(sum/10);
         }
         return result.next;
     }
-}</code></pre>
+}
+</code></pre>
 
 <h5>3. Longest Substring Without Repeating Characters</h5>
 
-<pre><code class="language-java">public class Solution {
+<pre><code class="language-Java">public class Solution {
     public int lengthOfLongestSubstring(String s) {
         if(0 == s.length()) return 0;
-        Map<Character, Integer> map = new HashMap<>();
+        Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
         int max = 0;
-        for(int i = 0, j = 0; i<s.length(); i++){
+        for(int i = 0, j = 0; i&lt;s.length(); i++){
             if(map.containsKey(s.charAt(i))){
                 j = Math.max(j, map.get(s.charAt(i))+1);
             }
@@ -234,11 +236,12 @@ public class Solution {
         }
         return max;
     }
-}</code></pre>
+}
+</code></pre>
 
 <h5>4. Median of Two Sorted Arrays</h5>
 
-<pre><code class="language-java">public class Solution {
+<pre><code class="language-Java">public class Solution {
     public double findMedianSortedArrays(int[] A, int[] B) {
         int m = A.length, n = B.length;
         int l = (m + n + 1) / 2;
@@ -247,32 +250,33 @@ public class Solution {
     }
 
     public double getkth(int[] A, int aStart, int[] B, int bStart, int k) {
-        if (aStart > A.length - 1) return B[bStart + k - 1];            
-        if (bStart > B.length - 1) return A[aStart + k - 1];                
+        if (aStart &gt; A.length - 1) return B[bStart + k - 1];            
+        if (bStart &gt; B.length - 1) return A[aStart + k - 1];                
         if (k == 1) return Math.min(A[aStart], B[bStart]);
     
         int aMid = Integer.MAX_VALUE, bMid = Integer.MAX_VALUE;
-        if (aStart + k/2 - 1 < A.length) aMid = A[aStart + k/2 - 1]; 
-        if (bStart + k/2 - 1 < B.length) bMid = B[bStart + k/2 - 1];        
+        if (aStart + k/2 - 1 &lt; A.length) aMid = A[aStart + k/2 - 1]; 
+        if (bStart + k/2 - 1 &lt; B.length) bMid = B[bStart + k/2 - 1];        
     
-        if (aMid < bMid) 
+        if (aMid &lt; bMid) 
             return getkth(A, aStart + k/2, B, bStart,       k - k/2); 
         else 
             return getkth(A, aStart,       B, bStart + k/2, k - k/2);
     }
-}</code></pre>
+}
+</code></pre>
 
 <h5>5. Longest Palindromic Substring</h5>
 
-<pre><code class="language-java">public class Solution {
+<pre><code class="language-Java">public class Solution {
     private int lo, maxLen;
     
     public String longestPalindrome(String s) {
-        if (s.length() < 2){
+        if (s.length() &lt; 2){
             return s;
         }
     
-        for (int i = 0; i < s.length()-1; i++) {
+        for (int i = 0; i &lt; s.length()-1; i++) {
             extendPalindrome(s, i, i);  //assume odd length, try to extend Palindrome as possible
             extendPalindrome(s, i, i+1); //assume even length.
         }
@@ -280,16 +284,17 @@ public class Solution {
     }
     
     private void extendPalindrome(String s, int j, int k) {
-        while (j >= 0 && k < s.length() && s.charAt(j) == s.charAt(k)) {
+        while (j &gt;= 0 &amp;&amp; k &lt; s.length() &amp;&amp; s.charAt(j) == s.charAt(k)) {
             j--;
             k++;
         }
-        if (maxLen < k - j - 1) {
+        if (maxLen &lt; k - j - 1) {
             lo = j + 1;
             maxLen = k - j - 1;
         }
     }
-}</code></pre>
+}
+</code></pre>
 
     </section>
 
