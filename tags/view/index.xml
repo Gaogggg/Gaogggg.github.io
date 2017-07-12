@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gaoge&#39;s island</title>
-    <link>http://ggao.me/tags/view/index.xml</link>
+    <link>https://gaogggg.github.io/tags/view/index.xml</link>
     <description>Recent content on Gaoge&#39;s island</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>All rights reserved - 2016</copyright>
-    <atom:link href="http://ggao.me/tags/view/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://gaogggg.github.io/tags/view/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Pokemon Button</title>
-      <link>http://ggao.me/post/android/pokemon-button/</link>
+      <link>https://gaogggg.github.io/post/android/pokemon-button/</link>
       <pubDate>Mon, 19 Dec 2016 00:16:24 +0800</pubDate>
       
-      <guid>http://ggao.me/post/android/pokemon-button/</guid>
+      <guid>https://gaogggg.github.io/post/android/pokemon-button/</guid>
       <description>&lt;p&gt;&lt;code&gt;PokemonButton&lt;/code&gt;是受&lt;a href=&#34;https://github.com/jd-alexander/LikeButton&#34;&gt;LikeButton&lt;/a&gt;和&lt;a href=&#34;https://github.com/frogermcs/LikeAnimation&#34;&gt;LikeAnimation&lt;/a&gt;的启发，类似&lt;code&gt;Twitter&lt;/code&gt;的&lt;code&gt;Like&lt;/code&gt;动画的一种实现。&lt;/p&gt;
 
 &lt;p&gt;具体效果图如下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://ggao.me/post/android/pokemonbutton.gif&#34; alt=&#34;pokemonbutton&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gaogggg.github.io/post/android/pokemonbutton.gif&#34; alt=&#34;pokemonbutton&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;该动画效果是通过手动绘制和使用&lt;code&gt;ObjectAnimator&lt;/code&gt;实现的，相较帧动画，这样的解决方案更为灵活。这篇文章只是一个简单的概述，如果想要知道更多的细节，可以在我的&lt;code&gt;GitHub&lt;/code&gt;中查看源代码——&lt;a href=&#34;https://github.com/Gaogggg/PokemonButton&#34;&gt;PokemonButton&lt;/a&gt;。&lt;/p&gt;
 
