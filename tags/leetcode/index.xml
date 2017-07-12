@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Gaoge&#39;s island</title>
-    <link>https://gaogggg.github.io/tags/leetcode/index.xml</link>
+    <link>https://ggao.me/tags/leetcode/index.xml</link>
     <description>Recent content on Gaoge&#39;s island</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>All rights reserved - 2016</copyright>
-    <atom:link href="https://gaogggg.github.io/tags/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://ggao.me/tags/leetcode/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>LeetCode 1 - 10</title>
-      <link>https://gaogggg.github.io/post/leetcode/leetcode-1-10/</link>
+      <link>https://ggao.me/post/leetcode/leetcode-1-10/</link>
       <pubDate>Mon, 19 Dec 2016 16:16:24 +0800</pubDate>
       
-      <guid>https://gaogggg.github.io/post/leetcode/leetcode-1-10/</guid>
+      <guid>https://ggao.me/post/leetcode/leetcode-1-10/</guid>
       <description>&lt;h5&gt;1. Two Sum&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;public class Solution {
